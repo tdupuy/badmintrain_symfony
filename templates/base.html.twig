@@ -12,12 +12,5 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
-        <nav class="navbar bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Badmintrain</a>
-            </div>
-        </nav>
-        {% block body %}{% endblock %}
-    </body>
+    {% block body %}{% endblock %}
 </html>
