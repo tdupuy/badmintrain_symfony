@@ -223,14 +223,12 @@
 
     <div class="px-6 pt-6 2xl:container">
       <div class="flex h-[80vh] items-center justify-center rounded-xl">
-          <span class="dark:text-white flex space-x-4">  <!-- Ajout de flex et d'un espace entre les blocs -->
-              <div class="w-1/2">  <!-- Ajout d'une largeur fixe ou adaptable (par ex: 1/2 ou w-full) -->
-                  {% include('home/dashboard/blocks/create.html.twig') %}
-              </div>
-              <div class="w-1/2">  <!-- Même chose ici pour l'autre bloc -->
-                  {% include('home/dashboard/blocks/history.html.twig') %}
-              </div>
-          </span>
+        <div class="dark:text-white grid grid-cols-4 gap-4">
+          <div class="flex items-stretch gap-4">
+            {% include('home/dashboard/blocks/create.html.twig') %}
+            {% include('home/dashboard/blocks/history.html.twig') %}
+          </div>
+        </div>
       </div>
     </div>
   </div>

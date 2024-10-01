@@ -1,19 +1,13 @@
-  <a href="{{ path("tournament.create") }}">
-    <div class="grid gap-6 md:mx-auto md:w-full lg:w-full lg:grid-cols-3">
-      <div class="group space-y-6 border border-gray-100 dark:border-gray-700 rounded-3xl bg-white dark:bg-gray-800 px-8 py-12 text-center shadow-2xl shadow-gray-600/10 dark:shadow-none">
-        <img
-          class="mx-auto w-24"
-          src={{asset('media/trophee.avif')}}
-          alt="illustration"
-          loading="lazy"
-        />
-        <h3 class="text-2xl font-semibold text-gray-800 dark:text-white">Créer votre premier tournoi !</h3>
-        <p>
-          Paramétrer votre tournoi, ajouter vos utilisateurs et lancer le tournoi
-        </p>
-          <span class="text-primary">&rightarrow;</span>
-        </a>
-      </div>
-    </div>
-  </a>
-                                    
+<a href="{{ path('tournament.create') }}" class="grow">
+  <div class="border border-gray-100 dark:border-gray-700 rounded-3xl bg-white dark:bg-gray-800 px-8 py-12 text-center shadow-2xl shadow-gray-600/10 dark:shadow-none w-72 h-full">
+    <img
+      class="mx-auto w-24"
+      src={{asset('media/trophee.avif')}}
+      alt="illustration"
+      loading="lazy"
+    />
+    <h3 class="text-2xl font-semibold text-gray-800 dark:text-white">Créer votre premier tournoi !</h3>
+    <p>Paramétrer votre tournoi, ajouter vos utilisateurs et lancer le tournoi</p>
+    <span class="text-primary">&rightarrow;</span>
+  </div>
+</a>
