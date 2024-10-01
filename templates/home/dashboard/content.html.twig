@@ -1,0 +1,14 @@
+{% extends 'home/dashboard.html.twig' %}
+
+{% block content %}
+<div class="px-6 pt-6 2xl:container">
+    <div class="flex h-[80vh] items-center justify-center rounded-xl">
+        <div class="dark:text-white grid grid-cols-4 gap-4">
+            <div class="flex items-stretch gap-4">
+            {% include('home/dashboard/blocks/create.html.twig') %}
+            {% include('home/dashboard/blocks/history.html.twig') %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

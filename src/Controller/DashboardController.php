@@ -18,7 +18,7 @@ class DashboardController extends AbstractController
         $last_tournament = $em->getRepository(Tournament::class)->findOneBy([], ['createdAt' => 'DESC']);
         $user = $this->getUser();
 
-        return $this->render('home/dashboard.html.twig', [
+        return $this->render('home/dashboard/content.html.twig', [
             'firstname' => $user->getfirstname(),
             'lastname' => $user->getlastname(),
             'lasttournament' => $last_tournament
