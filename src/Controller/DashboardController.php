@@ -9,7 +9,7 @@ use Symfony\Component\Security\Core\Security;
 
 class DashboardController extends AbstractController
 {
-    #[Route('/dashboard', name : 'app_dashboard')]
+    #[Route('/dashboard', name : 'tournament.dashboard')]
     public function init(): Response
     {
         $user = $this->getUser();

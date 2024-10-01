@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class TournamentController extends AbstractController
 {
-    #[Route('/tournament/create', name : 'app_lucky')]
+    #[Route('/tournament/create', name : 'tournament.create')]
     public function create(Request $request): Response
     {
         $tournament = new Tournament();
@@ -21,7 +21,7 @@ class TournamentController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // @ TODO
 
-            return $this->redirectToRoute('app_dashboard');
+            return $this->redirectToRoute('tournament.dashboard');
         }
 
         return $this->render('tournament/create.html.twig', [
