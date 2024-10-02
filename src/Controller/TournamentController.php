@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Tournament;
-use App\Form\TournamentForm;
+use App\Form\TournamentFormType;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,12 +20,12 @@ class TournamentController extends AbstractController
         $user = $this->getUser();
 
         $tournament = new Tournament();
-        $form = $this->createForm(TournamentForm::class, $tournament);
+        $form = $this->createForm(TournamentFormType::class, $tournament);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $tournament = $form->getData();
-            /** Passer par le formulaire */
-            $tournament->setCreatedAt(new DateTimeImmutable())
+            $tournament
+                ->setCreatedAt(new DateTimeImmutable())
                 ->setUpdatedAt(new DateTimeImmutable());
             $em->persist($tournament);
             $em->flush();
