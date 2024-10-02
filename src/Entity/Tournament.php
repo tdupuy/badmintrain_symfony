@@ -32,6 +32,9 @@ class Tournament
     #[ORM\Column(type: Types::SMALLINT, options: ['default' => 0])]
     private ?int $ended = null;
 
+    #[ORM\Column]
+    private ?int $admin = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,6 +108,18 @@ class Tournament
     public function setEnded(int $ended): static
     {
         $this->ended = $ended;
+
+        return $this;
+    }
+
+    public function getAdmin(): ?int
+    {
+        return $this->admin;
+    }
+
+    public function setAdmin(int $admin): static
+    {
+        $this->admin = $admin;
 
         return $this;
     }

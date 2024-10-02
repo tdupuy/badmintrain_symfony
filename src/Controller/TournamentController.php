@@ -26,7 +26,9 @@ class TournamentController extends AbstractController
             $tournament = $form->getData();
             $tournament
                 ->setCreatedAt(new DateTimeImmutable())
-                ->setUpdatedAt(new DateTimeImmutable());
+                ->setUpdatedAt(new DateTimeImmutable())
+                ->setEnded(0)
+                ->setAdmin($user->getId());
             $em->persist($tournament);
             $em->flush();
             return $this->redirectToRoute('tournament.dashboard');

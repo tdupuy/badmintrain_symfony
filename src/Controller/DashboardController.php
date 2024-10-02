@@ -15,9 +15,8 @@ class DashboardController extends AbstractController
     #[Route('/dashboard', name : 'tournament.dashboard')]
     public function init(EntityManagerInterface $em): Response
     {
-        $last_tournament = $em->getRepository(Tournament::class)->findOneBy(['ended' => 1], ['createdAt' => 'DESC']);
         $user = $this->getUser();
-
+        $last_tournament = $em->getRepository(Tournament::class)->findOneBy(['ended' => 1, 'admin' => $user->getId()], ['createdAt' => 'DESC']);
         return $this->render('home/dashboard/content.html.twig', [
             'firstname' => $user->getfirstname(),
             'lastname' => $user->getlastname(),
