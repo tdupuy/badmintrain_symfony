@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\TournamentRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TournamentRepository::class)]
@@ -27,6 +28,9 @@ class Tournament
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\Column(type: Types::SMALLINT, options: ['default' => 0])]
+    private ?int $ended = null;
 
     public function getId(): ?int
     {
@@ -89,6 +93,18 @@ class Tournament
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getEnded(): ?int
+    {
+        return $this->ended;
+    }
+
+    public function setEnded(int $ended): static
+    {
+        $this->ended = $ended;
 
         return $this;
     }
