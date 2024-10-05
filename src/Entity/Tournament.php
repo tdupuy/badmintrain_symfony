@@ -35,6 +35,9 @@ class Tournament
     #[ORM\Column]
     private ?int $admin = null;
 
+    #[ORM\Column]
+    private ?int $nbjoueurs = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -120,6 +123,18 @@ class Tournament
     public function setAdmin(int $admin): static
     {
         $this->admin = $admin;
+
+        return $this;
+    }
+
+    public function getNbjoueurs(): ?int
+    {
+        return $this->nbjoueurs;
+    }
+
+    public function setNbjoueurs(int $nbjoueurs): static
+    {
+        $this->nbjoueurs = $nbjoueurs;
 
         return $this;
     }

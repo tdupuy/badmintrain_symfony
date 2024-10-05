@@ -1,2 +1,23 @@
+* {
+  font-family: "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
 
+/* Style des labels */
+form .orange-input{
+  outline: 0;
+  border-width: 0 0 2px;
+  border-color: #FA8402;
+}
 
+.text-orange{
+  color: #FA8402;
+}
+
+.bg-orange{
+  background-color: #FA8402;
+}

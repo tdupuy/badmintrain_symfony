@@ -16,7 +16,6 @@ class TournamentFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name')
             ->add('nbterrains', ChoiceType::class, [
                 'choices'  => [
                     '1' => 1,
@@ -29,18 +28,9 @@ class TournamentFormType extends AbstractType
                     '8' => 8,
                     '9' => 9,
                     '10' => 10
-                ]
-            ])
-            ->add('timer', ChoiceType::class, [
-                'choices'  => [
-                    '0' => 'Pas de timer',
-                    '5' => 1,
-                    '7' => 2,
-                    '10' => 3,
-                    '15' => 4,
-                    '20' => 5,
                 ],
-            ]);
+            ])
+            ->add('nbjoueurs');
     }
 
     public function configureOptions(OptionsResolver $resolver): void
