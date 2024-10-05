@@ -22,15 +22,17 @@ class HomeController extends AbstractController
         $form = $this->createForm(TournamentFormType::class, $tournament);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /*$tournament = $form->getData();
+            $tournament = $form->getData();
             $tournament
                 ->setCreatedAt(new DateTimeImmutable())
                 ->setUpdatedAt(new DateTimeImmutable())
                 ->setEnded(0)
-                ->setAdmin($user->getId());
+                ->setAdmin(1)
+            ;
             $em->persist($tournament);
             $em->flush();
-            return $this->redirectToRoute('tournament.dashboard');*/
+            
+            #return $this->redirectToRoute('tournament.dashboard');
         }
 
         return $this->render('home/home.html.twig', [

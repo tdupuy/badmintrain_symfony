@@ -13,26 +13,30 @@
             </div>
             <div class="col bg-white">
                 <div class="container mt-5">
-    <form>
-      <div class="form-group">
-            <h4 class="text-center text-orange"> Créer votre tournoi </h4>
-            {{ form_errors(tournamentForm) }}
-    
-            {{ form_start(tournamentForm) }}
-                {{ form_label(tournamentForm.nbterrains, null, {
-                    'label': 'Nombre de terrain',
-                    'label_attr': {'class': 'form-label text-orange'}
-                }) }}
-                {{ form_widget(tournamentForm.nbterrains, {
-                    'attr': {'class': 'form-select shadow-none border-top-0 rounded-0 orange-input'}
-                }) }}
-                {{ form_label(tournamentForm.nbjoueurs, null, {
-                    'label': 'Nombre de joueurs',
-                    'label_attr': {'class': 'form-label text-orange'}
-                }) }}
-                {{ form_widget(tournamentForm.nbjoueurs, {
-                    'attr': {'class': 'form-control shadow-none border-top-0 rounded-0 orange-input'}
-                }) }}
-                <button type="submit" class="btn btn-primary bg-orange m-auto "> Valider </button>
-            {{ form_end(tournamentForm)}}
+                    <div class="form-group">
+                        <h4 class="text-center text-orange"> Créer votre tournoi </h4>
+                        {{ form_errors(tournamentForm) }}
+                
+                        {{ form_start(tournamentForm) }}
+                            {{ form_label(tournamentForm.nbterrains, null, {
+                                'label': 'Nombre de terrain',
+                                'label_attr': {'class': 'form-label text-orange'}
+                            }) }}
+                            {{ form_widget(tournamentForm.nbterrains, {
+                                'attr': {'class': 'form-select shadow-none border-top-0 rounded-0 orange-input'}
+                            }) }}
+                            {{ form_label(tournamentForm.nbjoueurs, null, {
+                                'label': 'Nombre de joueurs',
+                                'label_attr': {'class': 'form-label text-orange'}
+                            }) }}
+                            {{ form_widget(tournamentForm.nbjoueurs, {
+                                'attr': {'class': 'form-control shadow-none border-top-0 rounded-0 orange-input'}
+                            }) }}
+                            <button type="submit" class="btn btn-primary bg-orange m-auto "> Valider </button>
+                        {{ form_end(tournamentForm)}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
