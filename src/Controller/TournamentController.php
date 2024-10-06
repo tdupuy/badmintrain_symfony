@@ -28,10 +28,10 @@ class TournamentController extends AbstractController
                 ->setCreatedAt(new DateTimeImmutable())
                 ->setUpdatedAt(new DateTimeImmutable())
                 ->setEnded(0)
-                ->setAdmin($user->getId());
+                ->setAdmin(!is_null($user) ? $user->getId() : 1);
             $em->persist($tournament);
             $em->flush();
-            return $this->redirectToRoute('tournament.dashboard');
+            return $this->redirectToRoute('matches.show', ['id' => $tournament->getId()]);
         }
 
         return $this->render('tournament/create.html.twig', [

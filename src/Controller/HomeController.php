@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Tournament;
 use App\Form\TournamentFormType;
+use App\Controller\MatchesController;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,8 +32,8 @@ class HomeController extends AbstractController
             ;
             $em->persist($tournament);
             $em->flush();
-            
-            #return $this->redirectToRoute('tournament.dashboard');
+            // Create all the teams
+            return $this->redirectToRoute('matches.show', ['id' => $tournament->getId()]);
         }
 
         return $this->render('home/home.html.twig', [
