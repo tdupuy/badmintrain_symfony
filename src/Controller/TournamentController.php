@@ -31,7 +31,7 @@ class TournamentController extends AbstractController
                 ->setAdmin(!is_null($user) ? $user->getId() : 1);
             $em->persist($tournament);
             $em->flush();
-            return $this->redirectToRoute('matches.show', ['id' => $tournament->getId()]);
+            return $this->redirectToRoute('matches.show', ['id' => $tournament->getId(), 'turn' => 1]);
         }
 
         return $this->render('tournament/create.html.twig', [

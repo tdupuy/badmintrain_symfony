@@ -19,6 +19,9 @@ class Matches
     #[ORM\Column]
     private ?int $idteam2 = null;
 
+    #[ORM\Column]
+    private ?int $idtournament = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +47,18 @@ class Matches
     public function setIdteam2(int $idteam2): static
     {
         $this->idteam2 = $idteam2;
+
+        return $this;
+    }
+
+    public function getIdtournament(): ?int
+    {
+        return $this->idtournament;
+    }
+
+    public function setIdtournament(int $idtournament): static
+    {
+        $this->idtournament = $idtournament;
 
         return $this;
     }

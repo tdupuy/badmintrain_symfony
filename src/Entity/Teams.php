@@ -19,6 +19,9 @@ class Teams
     #[ORM\Column(nullable: true)]
     private ?int $player2 = null;
 
+    #[ORM\Column]
+    private ?int $idtournament = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +47,18 @@ class Teams
     public function setPlayer2(?int $player2): static
     {
         $this->player2 = $player2;
+
+        return $this;
+    }
+
+    public function getIdtournament(): ?int
+    {
+        return $this->idtournament;
+    }
+
+    public function setIdtournament(int $idtournament): static
+    {
+        $this->idtournament = $idtournament;
 
         return $this;
     }
