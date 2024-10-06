@@ -51,10 +51,15 @@ class MatchesController extends AbstractController
             }
         }
 
-        // Finaly generate the objet containing the "step" to pass to the view;
-
+        // return information for this turn
+        $matches_turn = $matchesrepository->findMatchesForTurn($turn, $tournament->getNbterrains(), $tournament->getId());
+        foreach($matches_turn as $key => $match_turn){
+            $matches_played['teams'][0] = $teamrepository->findOneBy(['id' => $match_turn->getIdTeam1()]);
+            $matches_played['teams'][1] = $teamrepository->findOneBy(['id' => $match_turn->getIdTeam2()]);
+        }
 
         return $this->render('matches/show.html.twig', [
+            'matches' => $matches_played
         ]);
     }
 
