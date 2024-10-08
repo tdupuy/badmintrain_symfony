@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\MatchesRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MatchesRepository::class)]
@@ -21,6 +22,9 @@ class Matches
 
     #[ORM\Column]
     private ?int $idtournament = null;
+
+    #[ORM\Column(type: Types::SMALLINT, options: ['default' => 0])]
+    private ?int $played = null;
 
     public function getId(): ?int
     {
@@ -59,6 +63,18 @@ class Matches
     public function setIdtournament(int $idtournament): static
     {
         $this->idtournament = $idtournament;
+
+        return $this;
+    }
+
+    public function getPlayed(): ?int
+    {
+        return $this->played;
+    }
+
+    public function setPlayed(int $played): static
+    {
+        $this->played = $played;
 
         return $this;
     }

@@ -17,6 +17,15 @@ class MatchesRepository extends ServiceEntityRepository
         parent::__construct($registry, Matches::class);
     }
 
+    public function findAvailableMatchForTurn($idtournament, $not_in = ''){
+        return $this->createQueryBuilder('r')
+        ->where('r.idteam1 NOT IN ('.$not_in.') AND r.idteam2 NOT IN ('.$not_in.') AND r.idtournament = :idtournament AND r.played = 0')
+        ->setParameter('idtournament', $idtournament)
+        ->setMaxResults(1)
+        ->getQuery()
+        ->getSingleResult();
+    }
+
     public function findMatchesForTurn(int $turn, int $nbmatches, int $tournamentid): array
     {
         return $this->createQueryBuilder('r')

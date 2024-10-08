@@ -21,3 +21,67 @@ form .orange-input{
 .bg-orange{
   background-color: #FA8402;
 }
+
+/* Match */
+.card:not(.post-form) {
+  display:inline-block;
+  height: 15rem;
+}
+
+.terrain-content{
+  background-color:#3a8eba;
+  height:19rem;
+}
+
+.player{
+  width: 50%;
+  height: 6rem;
+  border-bottom: 2px solid white;
+}
+
+.player.left{
+  float: left;
+  border-right: 2px solid white;
+}
+
+.player.right{
+  float: right;
+}
+
+.terrain-separator{
+  height: 9rem;
+  border-bottom: 2px solid white;
+}
+
+.player_nb {
+  position: relative;
+  top: 2rem;
+  font-size: 1.2rem;
+  border: 1px solid white;
+  background-color: white;
+  padding: .33rem;
+  border-radius: 5px;
+  color: #3a8eba;
+  font-weight: bold;
+}
+
+.ligne-fond.top{
+  height: 2rem;
+  border-bottom: 2px solid white;
+}
+
+.corridor{
+  position: absolute;
+  height: 20rem;
+}
+
+.corridor.left{
+  left: 1rem;
+  border-right: 2px solid white;
+}
+
+.corridor.right{
+  right: 1rem;
+  border-left: 2px solid white;
+  top: 3rem;
+}
