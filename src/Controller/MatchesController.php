@@ -57,29 +57,29 @@ class MatchesController extends AbstractController
         $str_to_exclude = '';
         for($i = 0; $i < $tournament->getNbterrains(); $i++){
             // If it's the first time
+
             if($i == 0){
                 $match_selected = $matchesrepository->findOneBy(['played' => 0, 'idtournament' => $tournament->getId()]);
                 $match_selected->setPlayed(1);
                 $em->persist($match_selected);
                 $em->flush();
-                $str_to_exclude .= $this->excludeTeamsForMatches($match_selected->getIdTeam1(), $tournament->getId(), $teamrepository);
-                $str_to_exclude .= $this->excludeTeamsForMatches($match_selected->getIdTeam2(), $tournament->getId(), $teamrepository);
+                $players_team1 = $teamrepository->findOneBy(['id' => $match_selected->getIdTeam1()]); 
+                $players_team2 = $teamrepository->findOneBy(['id' => $match_selected->getIdTeam2()]); 
+                $str_to_exclude .= $players_team1->getPlayer1() . ',' . $players_team1->getPlayer2() . ',' . $players_team2->getPlayer1() . ',' . $players_team2->getPlayer2() . ',';                
             }else{
                 $str_to_exclude = rtrim($str_to_exclude, ',');
-                $match_selected = $matchesrepository->findAvailableMatchForTurn($tournament->getId(), $str_to_exclude);
+                $first_team = $teamrepository->getTeamByExcludedPlayers($str_to_exclude, $tournament->getId());
+                // Add the two players to exclude and get the second team
+                $str_to_exclude .= ',' . $first_team->getPlayer1() . ',' . $first_team->getPlayer2();
+                $str_to_exclude = rtrim($str_to_exclude, ',');
+                $second_team = $teamrepository->getTeamByExcludedPlayers($str_to_exclude, $tournament->getId());
+                // A refaire, il faut gérer les teams "played"
+                $match_selected = $matchesrepository->findMatchForTwoTeams($first_team->getId(), $second_team->getId(), $tournament->getId());
                 $match_selected->setPlayed(1);
                 $em->persist($match_selected);
                 $em->flush();
-                $str_to_exclude .= $this->excludeTeamsForMatches($match_selected->getIdTeam1(), $tournament->getId(), $teamrepository);
-                $str_to_exclude .= $this->excludeTeamsForMatches($match_selected->getIdTeam2(), $tournament->getId(), $teamrepository);
             }
             $matches_turn[$i] = $match_selected;
-
-            if($i == 1){
-                /*dd($str_to_exclude);
-                dd($matches_turn);*/
-            }
-
         }
         // Format matches_played
         foreach($matches_turn as $key => $match_turn){

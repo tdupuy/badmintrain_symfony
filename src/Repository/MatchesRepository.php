@@ -17,6 +17,17 @@ class MatchesRepository extends ServiceEntityRepository
         parent::__construct($registry, Matches::class);
     }
 
+    public function findMatchForTwoTeams(int $team1, int $team2, int $idtournament){
+        return $this->createQueryBuilder('r')
+        ->where('r.idtournament = :idtournament AND (r.idteam1 = :team1 OR r.idteam2 = :team1) AND (r.idteam2 = :team2 OR r.idteam2 = :team2)')
+        ->setParameter('team1', $team1)
+        ->setParameter('team2', $team2)
+        ->setParameter('idtournament', $idtournament)
+        ->setMaxResults(1)
+        ->getQuery()
+        ->getSingleResult();
+    }
+
     public function findAvailableMatchForTurn($idtournament, $not_in = ''){
         return $this->createQueryBuilder('r')
         ->where('r.idteam1 NOT IN ('.$not_in.') AND r.idteam2 NOT IN ('.$not_in.') AND r.idtournament = :idtournament AND r.played = 0')
