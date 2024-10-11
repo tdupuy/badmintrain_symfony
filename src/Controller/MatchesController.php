@@ -27,6 +27,7 @@ class MatchesController extends AbstractController
                     ->setPlayer1($team_created['player1'])
                     ->setPlayer2($team_created['player2'])
                     ->setIdtournament($tournament->getId())
+                    ->setPlayed(0)
                 ;
                 $em->persist($team);
                 $em->flush();
@@ -34,58 +35,41 @@ class MatchesController extends AbstractController
             }
         }
 
-        // Then we need to create the matches
-        if(!($matches = $matchesrepository->findBy(['idtournament' => $tournament->getId()]))){
-            $matches_created = $this->makeMatches($teams);
-            // Shuffle before insert
-            // Save each Matches
-            foreach($matches_created as $match_created){
-                $match = new Matches();
-                $match
-                    ->setIdteam1($match_created['team1'])
-                    ->setIdteam2($match_created['team2'])
-                    ->setIdtournament($tournament->getId())
-                    ->setPlayed(0)
-                ;
-                $em->persist($match);
-                $em->flush();
-                $matches[] = $match;
-            }
-        }
-        
-        // Exécution de la requête*/
-        $str_to_exclude = '';
+        // Must create match for better performance
+        $exclude_players = '';
         for($i = 0; $i < $tournament->getNbterrains(); $i++){
-            // If it's the first time
-
             if($i == 0){
-                $match_selected = $matchesrepository->findOneBy(['played' => 0, 'idtournament' => $tournament->getId()]);
-                $match_selected->setPlayed(1);
-                $em->persist($match_selected);
-                $em->flush();
-                $players_team1 = $teamrepository->findOneBy(['id' => $match_selected->getIdTeam1()]); 
-                $players_team2 = $teamrepository->findOneBy(['id' => $match_selected->getIdTeam2()]); 
-                $str_to_exclude .= $players_team1->getPlayer1() . ',' . $players_team1->getPlayer2() . ',' . $players_team2->getPlayer1() . ',' . $players_team2->getPlayer2() . ',';                
+                $team1 = $teamrepository->findOneBy(['idtournament' => $tournament->getId(), 'played' => 0]);
+                $exclude_players .= $team1->getPlayer1() . ',' . $team1->getPlayer2();
+                $team2 = $teamrepository->getTeamByExcludedPlayers($exclude_players, $tournament->getId());
+                $exclude_players .= ',' . $team2->getPlayer1() . ',' . $team2->getPlayer2() . ',';
             }else{
-                $str_to_exclude = rtrim($str_to_exclude, ',');
-                $first_team = $teamrepository->getTeamByExcludedPlayers($str_to_exclude, $tournament->getId());
-                // Add the two players to exclude and get the second team
-                $str_to_exclude .= ',' . $first_team->getPlayer1() . ',' . $first_team->getPlayer2();
-                $str_to_exclude = rtrim($str_to_exclude, ',');
-                $second_team = $teamrepository->getTeamByExcludedPlayers($str_to_exclude, $tournament->getId());
-                // A refaire, il faut gérer les teams "played"
-                $match_selected = $matchesrepository->findMatchForTwoTeams($first_team->getId(), $second_team->getId(), $tournament->getId());
-                $match_selected->setPlayed(1);
-                $em->persist($match_selected);
-                $em->flush();
+                $team1 = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId());
+                $exclude_players .= $team1->getPlayer1() . ',' . $team1->getPlayer2() . ',';
+                $team2 = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId());
+                $exclude_players .= $team2->getPlayer1() . ',' . $team2->getPlayer2() . ',';
             }
-            $matches_turn[$i] = $match_selected;
-        }
-        // Format matches_played
-        foreach($matches_turn as $key => $match_turn){
-            $matches_played[$key]['teams'][0] = $teamrepository->findOneBy(['id' => $match_turn->getIdTeam1()]);
-            $matches_played[$key]['teams'][1] = $teamrepository->findOneBy(['id' => $match_turn->getIdTeam2()]);
-            $matches_played[$key]['terrain'] = $key + 1;
+            $match = new Matches();
+            $match                    
+                ->setIdteam1($team1->getId())
+                ->setIdteam2($team2->getId())
+                ->setIdtournament($tournament->getId())
+                ->setPlayed(1)
+            ;
+            $em->persist($match);
+            $em->flush();
+            $matches_played[$i]['teams'][0] = $teamrepository->findOneBy(['id' => $match->getIdTeam1()]);
+            $matches_played[$i]['teams'][0]
+                ->setPlayed(1);
+            $em->persist($matches_played[$i]['teams'][0]);
+            $em->flush();
+            $matches_played[$i]['teams'][1] = $teamrepository->findOneBy(['id' => $match->getIdTeam2()]);
+            $matches_played[$i]['teams'][1]
+                ->setPlayed(1);
+            $em->persist($matches_played[$i]['teams'][0]);
+            $em->flush();
+            $matches_played[$i]['terrain'] = $i + 1;
+
         }
 
         return $this->render('turn/show.html.twig', [
@@ -124,6 +108,7 @@ class MatchesController extends AbstractController
                 ];
             }
         }
+        shuffle($teams);
         return $teams;
     }
 
@@ -138,12 +123,14 @@ class MatchesController extends AbstractController
                 // Vérifier qu'il n'y a pas de joueurs communs entre les deux équipes
                 $team1 = $teams[$i];
                 $team2 = $teams[$j];
+                $team1Players = [$team1->getPlayer1(), $team1->getPlayer2()];
+                sort($team1Players);
+
+                $team2Players = [$team2->getPlayer1(), $team2->getPlayer2()];
+                sort($team2Players);
+                
                 // Si les équipes n'ont pas de joueurs en commun, on crée un match
-                if ($team1->getPlayer1() != $team2->getPlayer1() 
-                    && $team1->getPlayer1() != $team2->getPlayer2()
-                    && $team1->getPlayer2() != $team2->getPlayer1()
-                    && $team1->getPlayer2() != $team2->getPlayer2()
-                ) {
+                if ($team1Players != $team2Players) {
                     $matchups[] = [
                         'team1' => $team1->getId(), 
                         'team2' => $team2->getId()
@@ -151,6 +138,7 @@ class MatchesController extends AbstractController
                 }
             }
         }
+
         return $matchups;
     }
 }
