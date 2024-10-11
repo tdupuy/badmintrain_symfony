@@ -23,8 +23,8 @@ class Matches
     #[ORM\Column]
     private ?int $idtournament = null;
 
-    #[ORM\Column(type: Types::SMALLINT, options: ['default' => 0])]
-    private ?int $played = null;
+    #[ORM\Column(options: ['default' => 0])]
+    private ?int $turn = null;
 
     public function getId(): ?int
     {
@@ -67,14 +67,14 @@ class Matches
         return $this;
     }
 
-    public function getPlayed(): ?int
+    public function getTurn(): ?int
     {
-        return $this->played;
+        return $this->turn;
     }
 
-    public function setPlayed(int $played): static
+    public function setTurn(int $turn): static
     {
-        $this->played = $played;
+        $this->turn = $turn;
 
         return $this;
     }

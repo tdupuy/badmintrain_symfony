@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20241001165902 extends AbstractMigration
+final class Version20241011153848 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,17 +20,15 @@ final class Version20241001165902 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE tournament ADD created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL');
-        $this->addSql('ALTER TABLE tournament ADD updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL');
-        $this->addSql('COMMENT ON COLUMN tournament.created_at IS \'(DC2Type:datetime_immutable)\'');
-        $this->addSql('COMMENT ON COLUMN tournament.updated_at IS \'(DC2Type:datetime_immutable)\'');
+        $this->addSql('ALTER TABLE matches ADD turn INT DEFAULT 0 NOT NULL');
+        $this->addSql('ALTER TABLE matches DROP played');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
-        $this->addSql('ALTER TABLE tournament DROP created_at');
-        $this->addSql('ALTER TABLE tournament DROP updated_at');
+        $this->addSql('ALTER TABLE matches ADD played SMALLINT DEFAULT 0 NOT NULL');
+        $this->addSql('ALTER TABLE matches DROP turn');
     }
 }

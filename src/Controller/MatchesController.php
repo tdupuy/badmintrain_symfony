@@ -15,12 +15,12 @@ use Symfony\Component\Routing\Attribute\Route;
 class MatchesController extends AbstractController
 {
     #[Route('tournament/{id}/matches/{turn}', name : 'matches.show')]
-    public function index(Tournament $tournament, int $turn = 1, TeamsRepository $teamrepository, MatchesRepository $matchesrepository, EntityManagerInterface $em): Response
+    public function index(Tournament $tournament, int $turn, TeamsRepository $teamrepository, MatchesRepository $matchesrepository, EntityManagerInterface $em): Response
     {
         // If teams are not already created
         if(!($teams = $teamrepository->findBy(['idtournament' => $tournament->getId()]))){
             $teams_created = $this->makeTeams($tournament->getNbjoueurs());
-            // Save each Teams
+            // Create each Teams
             foreach($teams_created as $team_created){
                 $team = new Teams();
                 $team
@@ -54,7 +54,7 @@ class MatchesController extends AbstractController
                 ->setIdteam1($team1->getId())
                 ->setIdteam2($team2->getId())
                 ->setIdtournament($tournament->getId())
-                ->setPlayed(1)
+                ->setTurn($turn)
             ;
             $em->persist($match);
             $em->flush();
