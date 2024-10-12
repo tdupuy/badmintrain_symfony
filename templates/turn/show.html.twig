@@ -40,7 +40,8 @@
         {% endfor %}
         </div>
         {% if endoftournament %}
-            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn + 1 }) }}" class="btn btn-primary btn-next-turn"> Fin du tournoi </a>
+            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn }) }}" class="btn btn-primary btn-next-turn"> Fin du tournoi </a>
+            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-primary btn-prev-turn"> Tour précédent </a>
         {% else %}
             {% if turn %}
                 <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-primary btn-prev-turn"> Tour précédent </a>

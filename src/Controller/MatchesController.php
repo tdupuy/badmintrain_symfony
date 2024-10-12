@@ -37,16 +37,19 @@ class MatchesController extends AbstractController
 
         // Must create match for better performance
         $exclude_players = '';
-        if(empty($teamrepository->findBy(['idtournament' => $tournament->getId(), 'played' => 0]))){ // If there is no more teams to play
-            $endoftournament = true;
-        }else{
-            if($played_matches = $matchesrepository->findBy(['idtournament' => $tournament->getId(), 'turn' => $turn])){ // Check if we had previous matches
-                foreach($played_matches as $key => $played_match){
-                    $matches_played[$key]['teams'][0] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam1()]);
-                    $matches_played[$key]['teams'][1] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam2()]);
-                    $matches_played[$key]['terrain'] = $key + 1;
-                }
-            }else{ // Create new matches
+        if($played_matches = $matchesrepository->findBy(['idtournament' => $tournament->getId(), 'turn' => $turn])){ // Check if we had previous matches
+            foreach($played_matches as $key => $played_match){
+                $matches_played[$key]['teams'][0] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam1()]);
+                $matches_played[$key]['teams'][1] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam2()]);
+                $matches_played[$key]['terrain'] = $key + 1;
+            }
+        }else{ // Create new matches
+            // If there is no more match
+            if(empty($teamrepository->findBy(['idtournament' => $tournament->getId(), 'played' => 0]))){
+                $tournament->setEnded(1);
+                $em->flush();
+                $endoftournament = true;
+            }else{
                 for($i = 0; $i < $tournament->getNbterrains(); $i++){
                     if($i == 0){
                         $team1 = $teamrepository->findOneBy(['idtournament' => $tournament->getId(), 'played' => 0]);
@@ -71,15 +74,12 @@ class MatchesController extends AbstractController
                     $matches_played[$i]['teams'][0] = $teamrepository->findOneBy(['id' => $match->getIdTeam1()]);
                     $matches_played[$i]['teams'][0]
                         ->setPlayed(1);
-                    $em->persist($matches_played[$i]['teams'][0]);
                     $em->flush();
                     $matches_played[$i]['teams'][1] = $teamrepository->findOneBy(['id' => $match->getIdTeam2()]);
                     $matches_played[$i]['teams'][1]
                         ->setPlayed(1);
-                    $em->persist($matches_played[$i]['teams'][0]);
                     $em->flush();
                     $matches_played[$i]['terrain'] = $i + 1;
-        
                 }
             }
         }
