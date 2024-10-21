@@ -57,9 +57,19 @@ class MatchesController extends AbstractController
                         $team2 = $teamrepository->getTeamByExcludedPlayers($exclude_players, $tournament->getId());
                         $exclude_players .= ',' . $team2->getPlayer1() . ',' . $team2->getPlayer2() . ',';
                     }else{
-                        $team1 = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId());
+                        if($finded_team = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId())){
+                            $team1 = $finded_team;
+                        }else{
+                            $team1 = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId(), 1);
+                            $team1->setReplayed(1);
+                        }
                         $exclude_players .= $team1->getPlayer1() . ',' . $team1->getPlayer2() . ',';
-                        $team2 = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId());
+                        if($finded_team = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId())){
+                            $team2 = $finded_team;
+                        }else{
+                            $team2 = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId(), 1);
+                            $team2->setReplayed(1);
+                        }
                         $exclude_players .= $team2->getPlayer1() . ',' . $team2->getPlayer2() . ',';
                     }
                     $match = new Matches();
@@ -71,7 +81,7 @@ class MatchesController extends AbstractController
                     ;
                     $em->persist($match);
                     $em->flush();
-                    $matches_played[$i]['teams'][0] = $teamrepository->findOneBy(['id' => $match->getIdTeam1()]);
+                    $matches_played[$i]['teams'][0] = $team1;
                     $matches_played[$i]['teams'][0]
                         ->setPlayed(1);
                     $em->flush();

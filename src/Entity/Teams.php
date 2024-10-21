@@ -25,6 +25,9 @@ class Teams
     #[ORM\Column]
     private ?int $played = null;
 
+    // We don't need to save that in db
+    private ?int $replayed = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -62,6 +65,18 @@ class Teams
     public function setIdtournament(int $idtournament): static
     {
         $this->idtournament = $idtournament;
+
+        return $this;
+    }
+
+    public function getReplayed(): ?int
+    {
+        return $this->replayed;
+    }
+
+    public function setReplayed(int $replayed): static
+    {
+        $this->replayed = $replayed;
 
         return $this;
     }

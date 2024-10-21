@@ -11,6 +11,9 @@
                     <!--<div class="control control-prev"><i class="fa fa-chevron-left" aria-hidden="true"></i></div>
                     <div class="control control-next"><i class="fa fa-chevron-right" aria-hidden="true"></i></div>-->
                 </div>
+                {% if match.teams[0].replayed %}
+                    <small> teams 1 replayed </small>
+                {% endif %}
                 <div class="card-header text-uppercase">
                     <b>terrain {{ match.terrain }}</b>
                 </div>
@@ -36,6 +39,9 @@
                         <div class="right corridor"></div>
                     </div>
                 </div>
+                {% if match.teams[1].replayed %}
+                    <small> teams 2 replayed </small>
+                {% endif %}
             </div>
         {% endfor %}
         </div>

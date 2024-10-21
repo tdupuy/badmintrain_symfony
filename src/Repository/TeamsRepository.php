@@ -16,14 +16,15 @@ class TeamsRepository extends ServiceEntityRepository
         parent::__construct($registry, Teams::class);
     }
 
-    public function getTeamByExcludedPlayers(string $not_in, int $idtournament)
+    public function getTeamByExcludedPlayers(string $not_in, int $idtournament, int $played = 0)
     {
         return $this->createQueryBuilder('r')
-        ->where('r.player1 NOT IN ('.$not_in.') AND r.player2 NOT IN ('.$not_in.') AND r.idtournament = :idtournament')
+        ->where('(r.player1 NOT IN ('.$not_in.') AND r.player2 NOT IN ('.$not_in.')) AND r.idtournament = :idtournament AND r.played = :played')
         ->setParameter('idtournament', $idtournament)
+        ->setParameter('played', $played)
         ->setMaxResults(1)
         ->getQuery()
-        ->getSingleResult();
+        ->getOneOrNullResult();
     }
 
     //    /**
