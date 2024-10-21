@@ -8,15 +8,22 @@ use App\Entity\Matches;
 use App\Repository\TeamsRepository;
 use App\Repository\MatchesRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use phpDocumentor\Reflection\Types\Mixed_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class MatchesController extends AbstractController
 {
+
+    private ?EntityManagerInterface $entityManager = null;
+
     #[Route('tournament/{id}/matches/{turn}', name : 'matches.show')]
     public function index(Tournament $tournament, int $turn, TeamsRepository $teamrepository, MatchesRepository $matchesrepository, EntityManagerInterface $em): Response
     {
+        // Init entitymanager
+        $this->entityManager = $em;
+        
         // If teams are not already created
         if(!($teams = $teamrepository->findBy(['idtournament' => $tournament->getId()]))){
             $teams_created = $this->makeTeams($tournament->getNbjoueurs());
@@ -35,6 +42,45 @@ class MatchesController extends AbstractController
             }
         }
 
+        $matches_played = $this->makeMatches($tournament,$turn);
+        // If there is no more match
+        if($matches_played == 'end_of_tournament'){
+            $endoftournament = true;
+        }
+        
+        return $this->render('turn/show.html.twig', [
+            'matches' => $matches_played ?? [],
+            'turn' => $turn,
+            'tournamentid' => $tournament->getId(),
+            'endoftournament' => $endoftournament ?? false
+        ]);
+    }
+
+    public function makeTeams(int $nbplayers) : Array
+    {
+        $teams = [];
+
+        for($i = 1; $i <= $nbplayers; $i++){
+            for($y = $i + 1; $y <= $nbplayers; $y++){
+                $teams[] = [
+                    'player1' => $i, 
+                    'player2' => $y
+                ];
+            }
+        }
+        shuffle($teams);
+        return $teams;
+    }
+
+    public function makeMatches(Tournament $tournament, int $turn) : Array|String
+    {
+        if ($this->entityManager === null) {
+            throw new \RuntimeException("EntityManager n'est pas initialisé");
+        }else{
+            $em = $this->entityManager;
+            $teamrepository = $this->entityManager->getRepository(Teams::class);
+            $matchesrepository = $this->entityManager->getRepository(Matches::class);
+        }
         // Must create match for better performance
         $exclude_players = '';
         if($played_matches = $matchesrepository->findBy(['idtournament' => $tournament->getId(), 'turn' => $turn])){ // Check if we had previous matches
@@ -43,12 +89,13 @@ class MatchesController extends AbstractController
                 $matches_played[$key]['teams'][1] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam2()]);
                 $matches_played[$key]['terrain'] = $key + 1;
             }
+            return $matches_played;
         }else{ // Create new matches
             // If there is no more match
             if(empty($teamrepository->findBy(['idtournament' => $tournament->getId(), 'played' => 0]))){
                 $tournament->setEnded(1);
                 $em->flush();
-                $endoftournament = true;
+                return 'end_of_tournament';
             }else{
                 for($i = 0; $i < $tournament->getNbterrains(); $i++){
                     if($i == 0){
@@ -94,27 +141,6 @@ class MatchesController extends AbstractController
             }
         }
 
-        return $this->render('turn/show.html.twig', [
-            'matches' => $matches_played ?? [],
-            'turn' => $turn,
-            'tournamentid' => $tournament->getId(),
-            'endoftournament' => $endoftournament ?? false
-        ]);
-    }
-
-    public function makeTeams(int $nbplayers) : Array
-    {
-        $teams = [];
-
-        for($i = 1; $i <= $nbplayers; $i++){
-            for($y = $i + 1; $y <= $nbplayers; $y++){
-                $teams[] = [
-                    'player1' => $i, 
-                    'player2' => $y
-                ];
-            }
-        }
-        shuffle($teams);
-        return $teams;
+        return $matches_played;
     }
 }
