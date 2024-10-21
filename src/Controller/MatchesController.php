@@ -20,7 +20,7 @@ class MatchesController extends AbstractController
         // If teams are not already created
         if(!($teams = $teamrepository->findBy(['idtournament' => $tournament->getId()]))){
             $teams_created = $this->makeTeams($tournament->getNbjoueurs());
-            // Create each Teams
+            // Save each Team
             foreach($teams_created as $team_created){
                 $team = new Teams();
                 $team
@@ -102,25 +102,6 @@ class MatchesController extends AbstractController
         ]);
     }
 
-    public function excludeTeamsForMatches(int $id_team, int $idtournament, TeamsRepository $teamrepository) : string
-    {
-        // Get all teams from team1 where the player belong to exclude it from request
-        $str_to_exclude = '';
-        $players_team1 = $teamrepository->findOneBy(['id' => $id_team]);
-        $teams_to_exclude = $teamrepository->findBy(['player1' => $players_team1->getPlayer1(), 'idtournament' => $idtournament]);
-        foreach($teams_to_exclude as $team_to_exclude){
-            $str_to_exclude .= $team_to_exclude->getId() . ',';
-        }
-        /// If there is a 2nd player
-        if($players_team1->getPlayer2()){
-            $teams_to_exclude = $teamrepository->findBy(['player2' => $players_team1->getPlayer2(), 'idtournament' => $idtournament]);
-            foreach($teams_to_exclude as $team_to_exclude){
-                $str_to_exclude .= $team_to_exclude->getId() . ',';
-            }
-        }
-        return $str_to_exclude;
-    }
-
     public function makeTeams(int $nbplayers) : Array
     {
         $teams = [];
@@ -135,35 +116,5 @@ class MatchesController extends AbstractController
         }
         shuffle($teams);
         return $teams;
-    }
-
-    public function makeMatches(Array $teams) : Array
-    {
-        $matchups = [];
-    
-        // Boucle pour la première équipe
-        for ($i = 0; $i < count($teams); $i++) {
-            // Boucle pour la deuxième équipe
-            for ($j = $i + 1; $j < count($teams); $j++) {
-                // Vérifier qu'il n'y a pas de joueurs communs entre les deux équipes
-                $team1 = $teams[$i];
-                $team2 = $teams[$j];
-                $team1Players = [$team1->getPlayer1(), $team1->getPlayer2()];
-                sort($team1Players);
-
-                $team2Players = [$team2->getPlayer1(), $team2->getPlayer2()];
-                sort($team2Players);
-                
-                // Si les équipes n'ont pas de joueurs en commun, on crée un match
-                if ($team1Players != $team2Players) {
-                    $matchups[] = [
-                        'team1' => $team1->getId(), 
-                        'team2' => $team2->getId()
-                    ];
-                }
-            }
-        }
-
-        return $matchups;
     }
 }
