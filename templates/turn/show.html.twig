@@ -45,6 +45,13 @@
             </div>
         {% endfor %}
         </div>
+        <p class="h6 "><b>Coin buvette :</b> 
+                <span class="substitute">
+                    {% for sub in subs %}
+                        {{ sub }}
+                    {% endfor %}
+                </span>
+        </p>
         {% if endoftournament %}
             <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn }) }}" class="btn btn-primary btn-next-turn"> Fin du tournoi </a>
             <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-primary btn-prev-turn"> Tour précédent </a>

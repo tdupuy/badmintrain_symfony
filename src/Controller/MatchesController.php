@@ -8,6 +8,7 @@ use App\Entity\Matches;
 use App\Repository\TeamsRepository;
 use App\Repository\MatchesRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use phpDocumentor\Reflection\Types\Boolean;
 use phpDocumentor\Reflection\Types\Mixed_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,19 +42,54 @@ class MatchesController extends AbstractController
                 $teams[] = $team;
             }
         }
-
+        
         $matches_played = $this->makeMatches($tournament,$turn);
         // If there is no more match
         if($matches_played == 'end_of_tournament'){
             $endoftournament = true;
         }
-        
+
+        $subs = $this->manageSubs($tournament->getNbjoueurs(), $turn, $tournament->getId());
+
         return $this->render('turn/show.html.twig', [
             'matches' => $matches_played ?? [],
+            'subs' => $subs,
             'turn' => $turn,
             'tournamentid' => $tournament->getId(),
             'endoftournament' => $endoftournament ?? false
         ]);
+    }
+
+    public function manageSubs(int $nbplayers, int $turn, int $idtournament) : bool|Array
+    {
+        if ($this->entityManager === null) {
+            throw new \RuntimeException("EntityManager n'est pas initialisé");
+        }else{
+            $em = $this->entityManager;
+            $matchesrepository = $this->entityManager->getRepository(Matches::class);
+        }
+        // First get not played players for turn
+        $teams = $matchesrepository->getPlayersForTurn($turn, $idtournament);
+        if((count($teams) * 2) <= $nbplayers){ // If there is less players than teams
+            $players = [];
+            // Merge all the array returns to easier the management
+            $players = array_merge(array_values($teams[0]) ,array_values($teams[1]));
+            $i = 1;
+            while(isset($teams[$i + 1])){
+                $players = array_merge($players,array_values($teams[$i + 1]));
+                $i++;
+            }
+           // Get the players who hasn't play this turn
+           $notplaying_players = [];
+           for($i = 1; $i <= $nbplayers; $i++){
+                if(in_array($i, $players) === false){
+                    $notplaying_players[] = $i;
+                }
+           }
+           return $notplaying_players;
+        }else{
+            return false;
+        }
     }
 
     public function makeTeams(int $nbplayers) : Array

@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Matches;
-use App\Entity\Tournament;
+use App\Entity\Teams;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,35 +17,16 @@ class MatchesRepository extends ServiceEntityRepository
         parent::__construct($registry, Matches::class);
     }
 
-    public function findMatchForTwoTeams(int $team1, int $team2, int $idtournament){
-        return $this->createQueryBuilder('r')
-        ->where('r.idtournament = :idtournament AND (r.idteam1 = :team1 OR r.idteam2 = :team1) AND (r.idteam2 = :team2 OR r.idteam2 = :team2)')
-        ->setParameter('team1', $team1)
-        ->setParameter('team2', $team2)
-        ->setParameter('idtournament', $idtournament)
-        ->setMaxResults(1)
-        ->getQuery()
-        ->getSingleResult();
-    }
-
-    public function findAvailableMatchForTurn($idtournament, $not_in = ''){
-        return $this->createQueryBuilder('r')
-        ->where('r.idteam1 NOT IN ('.$not_in.') AND r.idteam2 NOT IN ('.$not_in.') AND r.idtournament = :idtournament AND r.played = 0')
-        ->setParameter('idtournament', $idtournament)
-        ->setMaxResults(1)
-        ->getQuery()
-        ->getSingleResult();
-    }
-
-    public function findMatchesForTurn(int $turn, int $nbmatches, int $tournamentid): array
+    public function getPlayersForTurn(int $turn, int $idtournament)
     {
-        return $this->createQueryBuilder('r')
-            ->where('r.idtournament = :tournamentid')
-            ->setFirstResult($turn * $nbmatches)
-            ->setMaxResults($nbmatches)
-            ->setParameter('tournamentid', $tournamentid)
-            ->getQuery()
-            ->getResult();
+        return $this->createQueryBuilder('m')
+        ->select('t.player1, t.player2')
+        ->innerJoin('App\Entity\Teams', 't', 'WITH', 'm.idteam1 = t.id OR m.idteam2 = t.id')
+        ->where('m.idtournament = :tournamentId AND m.turn = :turn')
+        ->setParameter('turn', $turn)
+        ->setParameter('tournamentId', $idtournament)
+        ->getQuery()
+        ->getResult();
     }
 
 //    /**
