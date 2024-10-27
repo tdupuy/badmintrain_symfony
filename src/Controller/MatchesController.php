@@ -36,6 +36,7 @@ class MatchesController extends AbstractController
                     ->setPlayer2($team_created['player2'])
                     ->setIdtournament($tournament->getId())
                     ->setPlayed(0)
+                    ->setWeight(0)
                 ;
                 $em->persist($team);
                 $em->flush();
@@ -67,6 +68,7 @@ class MatchesController extends AbstractController
         }else{
             $em = $this->entityManager;
             $matchesrepository = $this->entityManager->getRepository(Matches::class);
+            $teamsrepository = $this->entityManager->getRepository(Teams::class);
         }
         // First get not played players for turn
         $teams = $matchesrepository->getPlayersForTurn($turn, $idtournament);
@@ -82,9 +84,26 @@ class MatchesController extends AbstractController
            // Get the players who hasn't play this turn
            $notplaying_players = [];
            for($i = 1; $i <= $nbplayers; $i++){
-                if(in_array($i, $players) === false){
+                // Get All teams for player
+                $teams_for_player = $teamsrepository->getTeamsByPlayer($i);
+                // Formating Array
+                $teamsid = array_map(fn($team) => $team->getId(), $teams_for_player);
+                if(in_array($i, $players) === false){ // If player teams_for_player playing he's in subs. Add weight + 1 to maximise his chance to play
                     $notplaying_players[] = $i;
+                    $query = $em->createQuery('
+                        UPDATE App\Entity\Teams t
+                        SET t.weight = t.weight + 1
+                        WHERE t.id IN (:ids)
+                    ');
+                }else{
+                    $query = $em->createQuery('
+                        UPDATE App\Entity\Teams t
+                        SET t.weight = 0
+                        WHERE t.id IN (:ids)
+                    ');
                 }
+                $query->setParameter('ids', $teamsid);
+                $query->execute();
            }
            return $notplaying_players;
         }else{
@@ -127,7 +146,6 @@ class MatchesController extends AbstractController
             }
             return $matches_played;
         }else{ // Create new matches
-            // If there is no more match
             if(empty($teamrepository->findBy(['idtournament' => $tournament->getId(), 'played' => 0]))){
                 $tournament->setEnded(1);
                 $em->flush();

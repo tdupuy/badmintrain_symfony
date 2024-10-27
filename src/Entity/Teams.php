@@ -28,6 +28,9 @@ class Teams
     // We don't need to save that in db
     private ?int $replayed = null;
 
+    #[ORM\Column(options: ["default" => 0])]
+    private ?int $weight = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -89,6 +92,18 @@ class Teams
     public function setPlayed(int $played): static
     {
         $this->played = $played;
+
+        return $this;
+    }
+
+    public function getWeight(): ?int
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(int $weight): static
+    {
+        $this->weight = $weight;
 
         return $this;
     }

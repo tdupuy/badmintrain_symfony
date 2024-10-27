@@ -22,9 +22,20 @@ class TeamsRepository extends ServiceEntityRepository
         ->where('(r.player1 NOT IN ('.$not_in.') AND r.player2 NOT IN ('.$not_in.')) AND r.idtournament = :idtournament AND r.played = :played')
         ->setParameter('idtournament', $idtournament)
         ->setParameter('played', $played)
+        ->orderBy('r.weight DESC')
+        ->addOrderBy('r.id ASC')
         ->setMaxResults(1)
         ->getQuery()
         ->getOneOrNullResult();
+    }
+
+    public function getTeamsByPlayer(int $player)
+    {
+        return $this->createQueryBuilder('r')
+        ->where('r.player1 = :player OR r.player2 = :player AND r.played = 0')
+        ->setParameter('player', $player)
+        ->getQuery()
+        ->getResult();
     }
 
     //    /**
