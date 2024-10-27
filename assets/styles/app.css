@@ -8,18 +8,9 @@
 }
 
 /* Style des labels */
-form .orange-input{
+form .input-create-tournament{
   outline: 0;
   border-width: 0 0 2px;
-  border-color: #FA8402;
-}
-
-.text-orange{
-  color: #FA8402;
-}
-
-.bg-orange{
-  background-color: #FA8402;
 }
 
 /* Match */
@@ -85,3 +76,21 @@ form .orange-input{
   border-left: 2px solid white;
   top: 3rem;
 }
+
+.information{
+  background-image: url('/media/background-1.jpg');
+  background-position: center;
+  background-size: cover;
+}
+  
+  @media (min-width: 768px) {
+    .gradient-form {
+    height: 100vh !important;
+    }
+  }
+  @media (min-width: 769px) {
+    .gradient-custom-2 {
+    border-top-right-radius: .3rem;
+    border-bottom-right-radius: .3rem;
+    }
+  }
