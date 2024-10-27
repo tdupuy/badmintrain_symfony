@@ -22,8 +22,8 @@ class TeamsRepository extends ServiceEntityRepository
         ->where('(r.player1 NOT IN ('.$not_in.') AND r.player2 NOT IN ('.$not_in.')) AND r.idtournament = :idtournament AND r.played = :played')
         ->setParameter('idtournament', $idtournament)
         ->setParameter('played', $played)
-        ->orderBy('r.weight DESC')
-        ->addOrderBy('r.id ASC')
+        ->orderBy('r.weight', 'DESC')
+        ->addOrderBy('r.id', 'ASC')
         ->setMaxResults(1)
         ->getQuery()
         ->getOneOrNullResult();
