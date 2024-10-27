@@ -45,12 +45,17 @@ class MatchesController extends AbstractController
         }
         
         $matches_played = $this->makeMatches($tournament,$turn);
+
+        $subs = [];
         // If there is no more match
         if($matches_played == 'end_of_tournament'){
             $endoftournament = true;
+        }else{
+            $teams_playing = $matchesrepository->getPlayersForTurn($turn, $tournament->getId());
+            if((count($teams_playing) * 2) <= $tournament->getNbjoueurs()){ // If submanagement is needed
+                $subs = $this->manageSubs($tournament->getNbjoueurs(), $teams_playing);
+            }
         }
-
-        $subs = $this->manageSubs($tournament->getNbjoueurs(), $turn, $tournament->getId());
 
         return $this->render('turn/show.html.twig', [
             'matches' => $matches_played ?? [],
@@ -61,7 +66,7 @@ class MatchesController extends AbstractController
         ]);
     }
 
-    public function manageSubs(int $nbplayers, int $turn, int $idtournament) : bool|Array
+    public function manageSubs(int $nbplayers, array $teams) : Array
     {
         if ($this->entityManager === null) {
             throw new \RuntimeException("EntityManager n'est pas initialisé");
@@ -70,45 +75,39 @@ class MatchesController extends AbstractController
             $matchesrepository = $this->entityManager->getRepository(Matches::class);
             $teamsrepository = $this->entityManager->getRepository(Teams::class);
         }
-        // First get not played players for turn
-        $teams = $matchesrepository->getPlayersForTurn($turn, $idtournament);
-        if((count($teams) * 2) <= $nbplayers){ // If there is less players than teams
-            $players = [];
-            // Merge all the array returns to easier the management
-            $players = array_merge(array_values($teams[0]) ,array_values($teams[1]));
-            $i = 1;
-            while(isset($teams[$i + 1])){
-                $players = array_merge($players,array_values($teams[$i + 1]));
-                $i++;
-            }
-           // Get the players who hasn't play this turn
-           $notplaying_players = [];
-           for($i = 1; $i <= $nbplayers; $i++){
-                // Get All teams for player
-                $teams_for_player = $teamsrepository->getTeamsByPlayer($i);
-                // Formating Array
-                $teamsid = array_map(fn($team) => $team->getId(), $teams_for_player);
-                if(in_array($i, $players) === false){ // If player teams_for_player playing he's in subs. Add weight + 1 to maximise his chance to play
-                    $notplaying_players[] = $i;
-                    $query = $em->createQuery('
-                        UPDATE App\Entity\Teams t
-                        SET t.weight = t.weight + 1
-                        WHERE t.id IN (:ids)
-                    ');
-                }else{
-                    $query = $em->createQuery('
-                        UPDATE App\Entity\Teams t
-                        SET t.weight = 0
-                        WHERE t.id IN (:ids)
-                    ');
-                }
-                $query->setParameter('ids', $teamsid);
-                $query->execute();
-           }
-           return $notplaying_players;
-        }else{
-            return false;
+        $players = [];
+        // Merge all the array returns to easier the management
+        $players = array_merge(array_values($teams[0]) ,array_values($teams[1]));
+        $i = 1;
+        while(isset($teams[$i + 1])){
+            $players = array_merge($players,array_values($teams[$i + 1]));
+            $i++;
         }
+        // Get the players who hasn't play this turn
+        $notplaying_players = [];
+        for($i = 1; $i <= $nbplayers; $i++){
+            // Get All teams for player
+            $teams_for_player = $teamsrepository->getTeamsByPlayer($i);
+            // Formating Array
+            $teamsid = array_map(fn($team) => $team->getId(), $teams_for_player);
+            if(in_array($i, $players) === false){ // If player teams_for_player playing he's in subs. Add weight + 1 to maximise his chance to play
+                $notplaying_players[] = $i;
+                $query = $em->createQuery('
+                    UPDATE App\Entity\Teams t
+                    SET t.weight = t.weight + 1
+                    WHERE t.id IN (:ids)
+                ');
+            }else{
+                $query = $em->createQuery('
+                    UPDATE App\Entity\Teams t
+                    SET t.weight = 0
+                    WHERE t.id IN (:ids)
+                ');
+            }
+            $query->setParameter('ids', $teamsid);
+            $query->execute();
+        }
+        return $notplaying_players;
     }
 
     public function makeTeams(int $nbplayers) : Array
@@ -155,7 +154,12 @@ class MatchesController extends AbstractController
                     if($i == 0){
                         $team1 = $teamrepository->findOneBy(['idtournament' => $tournament->getId(), 'played' => 0]);
                         $exclude_players .= $team1->getPlayer1() . ',' . $team1->getPlayer2();
-                        $team2 = $teamrepository->getTeamByExcludedPlayers($exclude_players, $tournament->getId());
+                        if($finded_team = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId())){
+                            $team2 = $finded_team;
+                        }else{
+                            $team2 = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId(), 1);
+                            $team2->setReplayed(1);
+                        }
                         $exclude_players .= ',' . $team2->getPlayer1() . ',' . $team2->getPlayer2() . ',';
                     }else{
                         if($finded_team = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId())){
