@@ -8,11 +8,11 @@ use App\Entity\Matches;
 use App\Repository\TeamsRepository;
 use App\Repository\MatchesRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use phpDocumentor\Reflection\Types\Boolean;
-use phpDocumentor\Reflection\Types\Mixed_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class MatchesController extends AbstractController
 {
@@ -56,7 +56,6 @@ class MatchesController extends AbstractController
                 $subs = $this->manageSubs($tournament->getNbjoueurs(), $teams_playing);
             }
         }
-
         return $this->render('turn/show.html.twig', [
             'matches' => $matches_played ?? [],
             'subs' => $subs,
@@ -135,13 +134,21 @@ class MatchesController extends AbstractController
             $teamrepository = $this->entityManager->getRepository(Teams::class);
             $matchesrepository = $this->entityManager->getRepository(Matches::class);
         }
-        // Must create match for better performance
+
         $exclude_players = '';
         if($played_matches = $matchesrepository->findBy(['idtournament' => $tournament->getId(), 'turn' => $turn])){ // Check if we had previous matches
             foreach($played_matches as $key => $played_match){
+                $matches_played[$key]['id'] = $played_match->getId();
+                $matches_played[$key]['winner'] = $played_match->getWinnerteamid();
                 $matches_played[$key]['teams'][0] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam1()]);
                 $matches_played[$key]['teams'][1] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam2()]);
                 $matches_played[$key]['terrain'] = $key + 1;
+            }
+            // If we hade more courts than matches played create empty match
+            for($i = count($matches_played); $i < $tournament->getNbterrains(); $i++){
+                $matches_played[$i]['teams'][0] = [];
+                $matches_played[$i]['teams'][1] = [];
+                $matches_played[$i]['terrain'] = $i + 1;
             }
             return $matches_played;
         }else{ // Create new matches
@@ -151,6 +158,13 @@ class MatchesController extends AbstractController
                 return 'end_of_tournament';
             }else{
                 for($i = 0; $i < $tournament->getNbterrains(); $i++){
+                    if($i >= ($tournament->getNbjoueurs() / 4)){ // If we have more courts than players available, courts are empty;
+                        $matches_played[$i]['teams'][0] = [];
+                        $matches_played[$i]['teams'][1] = [];
+                        $matches_played[$i]['terrain'] = $i + 1;
+                        continue;
+                    }
+
                     if($i == 0){
                         $team1 = $teamrepository->findOneBy(['idtournament' => $tournament->getId(), 'played' => 0]);
                         $exclude_players .= $team1->getPlayer1() . ',' . $team1->getPlayer2();
@@ -173,6 +187,13 @@ class MatchesController extends AbstractController
                             $team2 = $finded_team;
                         }else{
                             $team2 = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId(), 1);
+                            // If there is no at least two teams which can play we set an empty court
+                            if(!$team2){
+                                $matches_played[$i]['teams'][0] = [];
+                                $matches_played[$i]['teams'][1] = [];
+                                $matches_played[$i]['terrain'] = $i + 1;
+                                continue;
+                            }
                             $team2->setReplayed(1);
                         }
                         $exclude_players .= $team2->getPlayer1() . ',' . $team2->getPlayer2() . ',';
@@ -186,6 +207,7 @@ class MatchesController extends AbstractController
                     ;
                     $em->persist($match);
                     $em->flush();
+                    $matches_played[$i]['id'] = $match->getId();
                     $matches_played[$i]['teams'][0] = $team1;
                     $matches_played[$i]['teams'][0]
                         ->setPlayed(1);
@@ -198,7 +220,38 @@ class MatchesController extends AbstractController
                 }
             }
         }
-
         return $matches_played;
+    }
+
+    #[Route('/set-winner', name: 'set-winner', methods: ['POST'])]
+    public function setWinner(Request $request, MatchesRepository $matchesrepository, EntityManagerInterface $em): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $teamid = $data['teamid'] ?? null;
+        $matchid = $data['matchid'] ?? null;
+        $code = '';
+
+        $match = $matchesrepository->findOneBy(['id' => $matchid]);
+        // If we set the winner
+        if(is_null($match->getWinnerteamid())){
+            $match->setWinnerteamid($teamid);
+            $code = 'set';
+        }else{
+            // Cancel
+            if($match->getWinnerteamid() == $teamid){
+                $match->setWinnerteamid(null);
+                $code = 'cancel';
+            }else{ // Update
+                $match->setWinnerteamid($teamid);
+                $code = 'update';
+            }
+        } 
+        $em->flush();
+        // Votre logique ici
+        return $this->json([
+            'code' => $code,
+            'teamid' => $teamid,
+            'matchid' => $matchid
+        ]);
     }
 }

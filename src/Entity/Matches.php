@@ -26,6 +26,9 @@ class Matches
     #[ORM\Column(options: ['default' => 0])]
     private ?int $turn = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $winnerteamid = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,6 +78,18 @@ class Matches
     public function setTurn(int $turn): static
     {
         $this->turn = $turn;
+
+        return $this;
+    }
+
+    public function getWinnerteamid(): ?int
+    {
+        return $this->winnerteamid;
+    }
+
+    public function setWinnerteamid(?int $winnerteamid): static
+    {
+        $this->winnerteamid = $winnerteamid;
 
         return $this;
     }

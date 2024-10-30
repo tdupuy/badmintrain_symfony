@@ -1,65 +1,87 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tour x{% endblock %}
+{% block title %}Badmintrain | Manche {{turn + 1}}{% endblock %}
 
 {% block body %}
     <div class="row">
         <div class="container-fluid text-center py-5">
         {% for match in matches %}
-            <div class="card mx-3 mb-5 terrain_1 terrain" style="width: 18rem; display: inline-block; height: 20rem;">
-                <div class="controls">
-                    <!--<div class="control control-prev"><i class="fa fa-chevron-left" aria-hidden="true"></i></div>
-                    <div class="control control-next"><i class="fa fa-chevron-right" aria-hidden="true"></i></div>-->
-                </div>
-                {% if match.teams[0].replayed %}
-                    <small> teams 1 replayed </small>
-                {% endif %}
+            {% if match.teams[0].replayed is defined and match.teams[0].replayed %}
+                {# <small> teams 1 replayed </small> #}
+            {% endif %}
+            <div 
+                class="card mx-3 mb-5 terrain_{{ match.terrain }} terrain" 
+                style="width: 18rem; display: inline-block; height: 20rem;"  
+                {{ match.id is defined and match.id ? 'data-matchid=' ~ match.id : '' }}
+                {{ stimulus_controller('winner') }}
+            >
                 <div class="card-header text-uppercase">
                     <b>terrain {{ match.terrain }}</b>
                 </div>
                 <div class="terrain-content">
                     <div>
+                    {% if match.teams[0] is empty and match.teams[1] is empty %}
+                        <div class="wrapper-no-match bg-white">
+                            <span style="position: absolute;width: 100%;left: 0.25rem;top: 5rem;">Pas de match sur ce terrain</span>
+                        </div>
+                    {% else %}
                         <div class="left corridor"></div>
-                        <div class="ligne-fond top d-block"></div>
-                        <div class="player left d-inline-block">
-                            <span class="player_nb">{{ match.teams[0].player1 }}</span>
+                        <div 
+                            class="winner-selected {{ (match.winner is defined and match.teams[0].id == match.winner ) ? 'winner' : '' }}" 
+                            data-teamid={{ match.teams[0].id }} 
+                            {{ stimulus_action('winner','setWinner','click') }}
+                        >
+                            <div class="ligne-fond top d-block"></div>
+                            <div class="player left d-inline-block">
+                                <span class="player_nb">{{ match.teams[0].player1 }}</span>
+                            </div>
+                            <div class="player right d-inline-block">
+                                <span class="player_nb">{{ match.teams[0].player2 }}</span>
+                            </div>
+                            <div class="d-block terrain-separator"></div>
                         </div>
-                        <div class="player right d-inline-block">
-                            <span class="player_nb">{{ match.teams[0].player2 }}</span>
+                        <div 
+                            class="winner-selected {{ ( match.winner is defined and match.teams[1].id == match.winner ) ? 'winner' : '' }}" 
+                            data-teamid={{ match.teams[1].id }} 
+                            {{ stimulus_action('winner','setWinner','click') }}
+                        >
+                            <div class="player left d-inline-block">
+                                <span class="player_nb">{{ match.teams[1].player1 }}</span>
+                            </div>
+                            <div class="player right d-inline-block">
+                                <span class="player_nb">{{ match.teams[1].player2 }}</span>
+                            </div>
+                            <div class="d-block terrain-separator"></div>
+                            <div class="ligne-fond bottom d-block"></div>
                         </div>
-                        <div class="d-block terrain-separator"></div>
-                        <div class="player left d-inline-block">
-                            <span class="player_nb">{{ match.teams[1].player1 }}</span>
-                        </div>
-                        <div class="player right d-inline-block">
-                            <span class="player_nb">{{ match.teams[1].player2 }}</span>
-                        </div>
-                        <div class="d-block terrain-separator"></div>
-                        <div class="ligne-fond bottom d-block"></div>
                         <div class="right corridor"></div>
+                    {% endif %}
                     </div>
                 </div>
-                {% if match.teams[1].replayed %}
-                    <small> teams 2 replayed </small>
-                {% endif %}
             </div>
+            {% if match.teams[1].replayed is defined and match.teams[1].replayed %}
+                {# <small> teams 2 replayed </small> #}
+            {% endif %}
         {% endfor %}
         </div>
-        <p class="h6 "><b>Coin buvette :</b> 
+        <p class="h6 text-center mb-5"><b>Coin buvette :</b> 
                 <span class="substitute">
                     {% for sub in subs %}
                         {{ sub }}
                     {% endfor %}
                 </span>
         </p>
+         <div class="d-grid gap-2 d-md-block text-center">
         {% if endoftournament %}
-            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn }) }}" class="btn btn-primary btn-next-turn"> Fin du tournoi </a>
+            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn }) }}" class="btn btn-primary btn-next-turn" role="button"> Fin du tournoi </a>
             <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-primary btn-prev-turn"> Tour précédent </a>
         {% else %}
+
+            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn + 1 }) }}" class="btn btn-success btn-next-turn d-inline w-auto m-auto me-1" role="button"> Tour suivant </a>
             {% if turn %}
-                <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-primary btn-prev-turn"> Tour précédent </a>
+                <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-warning btn-next-turn d-inline w-auto m-auto ms-1" role="button"> Tour précédent </a>
             {% endif %}
-            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn + 1 }) }}" class="btn btn-primary btn-next-turn"> Tour suivant </a>
         {% endif %}
+        </div>
     </div>
 {% endblock %}

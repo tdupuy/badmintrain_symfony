@@ -94,3 +94,11 @@ form .input-create-tournament{
     border-bottom-right-radius: .3rem;
     }
   }
+
+  .winner-selected:hover{
+    cursor: pointer;
+  }
+
+  .winner .player{
+    background-color:#D4AF37;
+  }
