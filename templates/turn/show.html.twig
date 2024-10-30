@@ -5,13 +5,15 @@
 {% block body %}
     <div class="row">
         <div class="container-fluid text-center py-5">
+        {{ dump(matches) }}
         {% for match in matches %}
             <div class="card mx-3 mb-5 terrain_1 terrain" style="width: 18rem; display: inline-block; height: 20rem;">
                 <div class="controls">
                     <!--<div class="control control-prev"><i class="fa fa-chevron-left" aria-hidden="true"></i></div>
                     <div class="control control-next"><i class="fa fa-chevron-right" aria-hidden="true"></i></div>-->
                 </div>
-                {% if match.teams[0].replayed %}
+                
+                {% if match.teams[0].replayed is defined and match.teams[0].replayed %}
                     <small> teams 1 replayed </small>
                 {% endif %}
                 <div class="card-header text-uppercase">
@@ -21,25 +23,32 @@
                     <div>
                         <div class="left corridor"></div>
                         <div class="ligne-fond top d-block"></div>
-                        <div class="player left d-inline-block">
-                            <span class="player_nb">{{ match.teams[0].player1 }}</span>
-                        </div>
-                        <div class="player right d-inline-block">
-                            <span class="player_nb">{{ match.teams[0].player2 }}</span>
-                        </div>
-                        <div class="d-block terrain-separator"></div>
-                        <div class="player left d-inline-block">
-                            <span class="player_nb">{{ match.teams[1].player1 }}</span>
-                        </div>
-                        <div class="player right d-inline-block">
-                            <span class="player_nb">{{ match.teams[1].player2 }}</span>
-                        </div>
-                        <div class="d-block terrain-separator"></div>
+                        {% if match.teams[0] is empty and match.teams[1] is empty %} {# if there is no team defined we don't want to show that #}
+                            <div class="match-impossible pt-5 px-3">
+                                <p class="h5 text-white text-center"> Pas de match sur ce terrain (libre) </p>
+                                <p class="h6 text-white text-center"> Sûrement la faut du développeur mais il se peut aussi que ce ne soit pas possible </p>
+                            </div>
+                        {% else %}
+                            <div class="player left d-inline-block">
+                                <span class="player_nb">{{ match.teams[0].player1 }}</span>
+                            </div>
+                            <div class="player right d-inline-block">
+                                <span class="player_nb">{{ match.teams[0].player2 }}</span>
+                            </div>
+                            <div class="d-block terrain-separator"></div>
+                            <div class="player left d-inline-block">
+                                <span class="player_nb">{{ match.teams[1].player1 }}</span>
+                            </div>
+                            <div class="player right d-inline-block">
+                                <span class="player_nb">{{ match.teams[1].player2 }}</span>
+                            </div>
+                            <div class="d-block terrain-separator"></div>
+                        {% endif %}
                         <div class="ligne-fond bottom d-block"></div>
                         <div class="right corridor"></div>
                     </div>
                 </div>
-                {% if match.teams[1].replayed %}
+                {% if match.teams[1].replayed is defined and match.teams[1].replayed %}
                     <small> teams 2 replayed </small>
                 {% endif %}
             </div>

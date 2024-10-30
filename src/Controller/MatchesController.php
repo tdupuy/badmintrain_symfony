@@ -151,6 +151,12 @@ class MatchesController extends AbstractController
                 return 'end_of_tournament';
             }else{
                 for($i = 0; $i < $tournament->getNbterrains(); $i++){
+                    if($i >= ($tournament->getNbjoueurs() / 4)){ // If i have more crouts than players available, courts are empty;
+                        $matches_played[$i]['teams'][0] = [];
+                        $matches_played[$i]['teams'][1] = [];
+                        $matches_played[$i]['terrain'] = $i + 1;
+                        continue;
+                    }
                     if($i == 0){
                         $team1 = $teamrepository->findOneBy(['idtournament' => $tournament->getId(), 'played' => 0]);
                         $exclude_players .= $team1->getPlayer1() . ',' . $team1->getPlayer2();
