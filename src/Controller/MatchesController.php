@@ -151,12 +151,13 @@ class MatchesController extends AbstractController
                 return 'end_of_tournament';
             }else{
                 for($i = 0; $i < $tournament->getNbterrains(); $i++){
-                    if($i >= ($tournament->getNbjoueurs() / 4)){ // If i have more crouts than players available, courts are empty;
+                    if($i >= ($tournament->getNbjoueurs() / 4)){ // If we have more courts than players available, courts are empty;
                         $matches_played[$i]['teams'][0] = [];
                         $matches_played[$i]['teams'][1] = [];
                         $matches_played[$i]['terrain'] = $i + 1;
                         continue;
                     }
+
                     if($i == 0){
                         $team1 = $teamrepository->findOneBy(['idtournament' => $tournament->getId(), 'played' => 0]);
                         $exclude_players .= $team1->getPlayer1() . ',' . $team1->getPlayer2();
@@ -179,6 +180,13 @@ class MatchesController extends AbstractController
                             $team2 = $finded_team;
                         }else{
                             $team2 = $teamrepository->getTeamByExcludedPlayers(rtrim($exclude_players, ','), $tournament->getId(), 1);
+                            // If there is no at least two teams which can play we set an empty court
+                            if(!$team2){
+                                $matches_played[$i]['teams'][0] = [];
+                                $matches_played[$i]['teams'][1] = [];
+                                $matches_played[$i]['terrain'] = $i + 1;
+                                continue;
+                            }
                             $team2->setReplayed(1);
                         }
                         $exclude_players .= $team2->getPlayer1() . ',' . $team2->getPlayer2() . ',';
