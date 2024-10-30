@@ -139,11 +139,12 @@ class MatchesController extends AbstractController
         if($played_matches = $matchesrepository->findBy(['idtournament' => $tournament->getId(), 'turn' => $turn])){ // Check if we had previous matches
             foreach($played_matches as $key => $played_match){
                 $matches_played[$key]['id'] = $played_match->getId();
+                $matches_played[$key]['winner'] = $played_match->getWinnerteamid();
                 $matches_played[$key]['teams'][0] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam1()]);
                 $matches_played[$key]['teams'][1] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam2()]);
                 $matches_played[$key]['terrain'] = $key + 1;
             }
-            // If we hade more courts thant matches played create empty match
+            // If we hade more courts than matches played create empty match
             for($i = count($matches_played); $i < $tournament->getNbterrains(); $i++){
                 $matches_played[$i]['teams'][0] = [];
                 $matches_played[$i]['teams'][1] = [];
@@ -228,14 +229,29 @@ class MatchesController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $teamid = $data['teamid'] ?? null;
         $matchid = $data['matchid'] ?? null;
+        $code = '';
 
         $match = $matchesrepository->findOneBy(['id' => $matchid]);
-        $match->setWinnerteamid($teamid);
+        // If we set the winner
+        if(is_null($match->getWinnerteamid())){
+            $match->setWinnerteamid($teamid);
+            $code = 'set';
+        }else{
+            // Cancel
+            if($match->getWinnerteamid() == $teamid){
+                $match->setWinnerteamid(null);
+                $code = 'cancel';
+            }else{ // Update
+                $match->setWinnerteamid($teamid);
+                $code = 'update';
+            }
+        } 
         $em->flush();
         // Votre logique ici
         return $this->json([
-            'message' => 'Success',
-            'teamid' => $teamid
+            'code' => $code,
+            'teamid' => $teamid,
+            'matchid' => $matchid
         ]);
     }
 }

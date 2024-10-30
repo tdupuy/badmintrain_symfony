@@ -9,22 +9,28 @@
             {% if match.teams[0].replayed is defined and match.teams[0].replayed %}
                 <small> teams 1 replayed </small>
             {% endif %}
-            <div class="card mx-3 mb-5 terrain_{{ match.terrain }} terrain" 
+            <div 
+                class="card mx-3 mb-5 terrain_{{ match.terrain }} terrain" 
                 style="width: 18rem; display: inline-block; height: 20rem;"  
                 {{ match.id is defined and match.id ? 'data-matchid=' ~ match.id : '' }}
-                {{ stimulus_controller('winner') }}>
+                {{ stimulus_controller('winner') }}
+            >
                 <div class="card-header text-uppercase">
                     <b>terrain {{ match.terrain }}</b>
                 </div>
                 <div class="terrain-content">
                     <div>
-                    {% if match.teams[0] is empty and match.teams[1] is empty %} {# if there is no team defined we don't want to show that #}
+                    {% if match.teams[0] is empty and match.teams[1] is empty %}
                         <div class="wrapper-no-match bg-white">
                             <span style="position: absolute;width: 100%;left: 0.25rem;top: 5rem;">Pas de match sur ce terrain</span>
                         </div>
                     {% else %}
                         <div class="left corridor"></div>
-                        <div class="winner-selected" data-teamid={{ match.teams[0].id }} {{ stimulus_action('winner','setWinner','click') }}>
+                        <div 
+                            class="winner-selected {{ (match.winner is defined and match.teams[0].id == match.winner ) ? 'winner' : '' }}" 
+                            data-teamid={{ match.teams[0].id }} 
+                            {{ stimulus_action('winner','setWinner','click') }}
+                        >
                             <div class="ligne-fond top d-block"></div>
                             <div class="player left d-inline-block">
                                 <span class="player_nb">{{ match.teams[0].player1 }}</span>
@@ -34,7 +40,11 @@
                             </div>
                             <div class="d-block terrain-separator"></div>
                         </div>
-                        <div class="winner-selected" data-teamid={{ match.teams[1].id }} {{ stimulus_action('winner','setWinner','click') }}>
+                        <div 
+                            class="winner-selected {{ ( match.winner is defined and match.teams[1].id == match.winner ) ? 'winner' : '' }}" 
+                            data-teamid={{ match.teams[1].id }} 
+                            {{ stimulus_action('winner','setWinner','click') }}
+                        >
                             <div class="player left d-inline-block">
                                 <span class="player_nb">{{ match.teams[1].player1 }}</span>
                             </div>

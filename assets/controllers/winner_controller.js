@@ -11,14 +11,11 @@ import { Controller } from '@hotwired/stimulus';
  */
 export default class extends Controller {
     connect() {
-        console.log('Le contrôleur Stimulus est connecté');
     }
     
     setWinner(e) {
-        console.log('Element clické');
         const teamid = e.currentTarget.dataset.teamid;
         const matchid = this.element.dataset.matchid;
-        console.log(matchid);
         this.callMatchesController(matchid, teamid);
     }
 
@@ -32,6 +29,21 @@ export default class extends Controller {
             body: JSON.stringify({ matchid, teamid })
         });
         const data = await response.json();
-        console.log(data);
+        console.log(data.code);
+        switch (data.code) {
+            case 'set' :
+                this.element.querySelector('[data-teamid="' + data.teamid +'"]').classList.add('winner');
+                break;
+            case 'update':
+            case 'cancel':
+                this.element.querySelectorAll('.winner').forEach(el => el.classList.remove('winner'));
+                
+                if (data.code === 'update') {
+                    this.element.querySelector(`[data-teamid="${data.teamid}"]`)?.classList.add('winner');
+                }
+                break;
+            default:
+                console.log('Code non reconnu:', data.code);
+        }
     }
 }

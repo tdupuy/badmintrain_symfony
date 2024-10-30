@@ -98,3 +98,7 @@ form .input-create-tournament{
   .winner-selected:hover{
     cursor: pointer;
   }
+
+  .winner .player{
+    background-color:#D4AF37;
+  }
