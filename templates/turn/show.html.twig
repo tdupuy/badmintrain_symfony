@@ -7,7 +7,7 @@
         <div class="container-fluid text-center py-5">
         {% for match in matches %}
             {% if match.teams[0].replayed is defined and match.teams[0].replayed %}
-                <small> teams 1 replayed </small>
+                {# <small> teams 1 replayed </small> #}
             {% endif %}
             <div 
                 class="card mx-3 mb-5 terrain_{{ match.terrain }} terrain" 
@@ -60,7 +60,7 @@
                 </div>
             </div>
             {% if match.teams[1].replayed is defined and match.teams[1].replayed %}
-                <small> teams 2 replayed </small>
+                {# <small> teams 2 replayed </small> #}
             {% endif %}
         {% endfor %}
         </div>
