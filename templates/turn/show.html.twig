@@ -47,21 +47,24 @@
             {% endif %}
         {% endfor %}
         </div>
-        <p class="h6 "><b>Coin buvette :</b> 
+        <p class="h6 text-center mb-5"><b>Coin buvette :</b> 
                 <span class="substitute">
                     {% for sub in subs %}
                         {{ sub }}
                     {% endfor %}
                 </span>
         </p>
+         <div class="d-grid gap-2 d-md-block text-center">
         {% if endoftournament %}
-            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn }) }}" class="btn btn-primary btn-next-turn"> Fin du tournoi </a>
+            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn }) }}" class="btn btn-primary btn-next-turn" role="button"> Fin du tournoi </a>
             <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-primary btn-prev-turn"> Tour précédent </a>
         {% else %}
+
+            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn + 1 }) }}" class="btn btn-success btn-next-turn d-inline w-auto m-auto me-1" role="button"> Tour suivant </a>
             {% if turn %}
-                <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-primary btn-prev-turn"> Tour précédent </a>
+                <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-warning btn-next-turn d-inline w-auto m-auto ms-1" role="button"> Tour précédent </a>
             {% endif %}
-            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn + 1 }) }}" class="btn btn-primary btn-next-turn"> Tour suivant </a>
         {% endif %}
+        </div>
     </div>
 {% endblock %}
