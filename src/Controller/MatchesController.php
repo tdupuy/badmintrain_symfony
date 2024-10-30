@@ -135,13 +135,19 @@ class MatchesController extends AbstractController
             $teamrepository = $this->entityManager->getRepository(Teams::class);
             $matchesrepository = $this->entityManager->getRepository(Matches::class);
         }
-        // Must create match for better performance
+
         $exclude_players = '';
         if($played_matches = $matchesrepository->findBy(['idtournament' => $tournament->getId(), 'turn' => $turn])){ // Check if we had previous matches
             foreach($played_matches as $key => $played_match){
                 $matches_played[$key]['teams'][0] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam1()]);
                 $matches_played[$key]['teams'][1] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam2()]);
                 $matches_played[$key]['terrain'] = $key + 1;
+            }
+            // If we hade more courts thant matches played create empty match
+            for($i = count($matches_played); $i < $tournament->getNbterrains(); $i++){
+                $matches_played[$i]['teams'][0] = [];
+                $matches_played[$i]['teams'][1] = [];
+                $matches_played[$i]['terrain'] = $i + 1;
             }
             return $matches_played;
         }else{ // Create new matches
