@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tour x{% endblock %}
+{% block title %}Badmintrain | Manche {{turn + 1}}{% endblock %}
 
 {% block body %}
     <div class="row">
@@ -13,7 +13,7 @@
                 <div class="card-header text-uppercase">
                     <b>terrain {{ match.terrain }}</b>
                 </div>
-                <div class="terrain-content">
+                <div class="terrain-content" {{ stimulus_controller('winner') }}>
                     <div>
                     {% if match.teams[0] is empty and match.teams[1] is empty %} {# if there is no team defined we don't want to show that #}
                         <div class="wrapper-no-match bg-white">
@@ -21,22 +21,26 @@
                         </div>
                     {% else %}
                         <div class="left corridor"></div>
-                        <div class="ligne-fond top d-block"></div>
-                        <div class="player left d-inline-block">
-                            <span class="player_nb">{{ match.teams[0].player1 }}</span>
+                        <div class="winner-selected" data-teamid={{ match.teams[0].id }} {{ stimulus_action('winner','setWinner','click') }}>
+                            <div class="ligne-fond top d-block"></div>
+                            <div class="player left d-inline-block">
+                                <span class="player_nb">{{ match.teams[0].player1 }}</span>
+                            </div>
+                            <div class="player right d-inline-block">
+                                <span class="player_nb">{{ match.teams[0].player2 }}</span>
+                            </div>
+                            <div class="d-block terrain-separator"></div>
                         </div>
-                        <div class="player right d-inline-block">
-                            <span class="player_nb">{{ match.teams[0].player2 }}</span>
+                        <div class="winner-selected" data-team={{ match.teams[1].id }} {{ stimulus_action('winner','setWinner','click') }}>
+                            <div class="player left d-inline-block">
+                                <span class="player_nb">{{ match.teams[1].player1 }}</span>
+                            </div>
+                            <div class="player right d-inline-block">
+                                <span class="player_nb">{{ match.teams[1].player2 }}</span>
+                            </div>
+                            <div class="d-block terrain-separator"></div>
+                            <div class="ligne-fond bottom d-block"></div>
                         </div>
-                        <div class="d-block terrain-separator"></div>
-                        <div class="player left d-inline-block">
-                            <span class="player_nb">{{ match.teams[1].player1 }}</span>
-                        </div>
-                        <div class="player right d-inline-block">
-                            <span class="player_nb">{{ match.teams[1].player2 }}</span>
-                        </div>
-                        <div class="d-block terrain-separator"></div>
-                        <div class="ligne-fond bottom d-block"></div>
                         <div class="right corridor"></div>
                     {% endif %}
                     </div>

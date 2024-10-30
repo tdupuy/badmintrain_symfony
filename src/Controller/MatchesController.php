@@ -8,11 +8,11 @@ use App\Entity\Matches;
 use App\Repository\TeamsRepository;
 use App\Repository\MatchesRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use phpDocumentor\Reflection\Types\Boolean;
-use phpDocumentor\Reflection\Types\Mixed_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class MatchesController extends AbstractController
 {
@@ -220,5 +220,16 @@ class MatchesController extends AbstractController
         }
 
         return $matches_played;
+    }
+
+    #[Route('/set-winner', name: 'set-winner', methods: ['POST'])]
+    public function setWinner(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        // Votre logique ici
+        return $this->json([
+            'message' => 'Action effectuée avec succès',
+            'teamid' => $data['teamid']
+        ]);
     }
 }
