@@ -17,18 +17,19 @@ export default class extends Controller {
     setWinner(e) {
         console.log('Element clické');
         const teamid = e.currentTarget.dataset.teamid;
-        console.log(teamid);
-        this.callMatchesController(teamid);
+        const matchid = this.element.dataset.matchid;
+        console.log(matchid);
+        this.callMatchesController(matchid, teamid);
     }
 
-    async callMatchesController(teamid) {
+    async callMatchesController(matchid, teamid) {
         const response = await fetch('/set-winner', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            body: JSON.stringify({ teamid })
+            body: JSON.stringify({ matchid, teamid })
         });
         const data = await response.json();
         console.log(data);

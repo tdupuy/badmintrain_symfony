@@ -56,7 +56,6 @@ class MatchesController extends AbstractController
                 $subs = $this->manageSubs($tournament->getNbjoueurs(), $teams_playing);
             }
         }
-
         return $this->render('turn/show.html.twig', [
             'matches' => $matches_played ?? [],
             'subs' => $subs,
@@ -139,6 +138,7 @@ class MatchesController extends AbstractController
         $exclude_players = '';
         if($played_matches = $matchesrepository->findBy(['idtournament' => $tournament->getId(), 'turn' => $turn])){ // Check if we had previous matches
             foreach($played_matches as $key => $played_match){
+                $matches_played[$key]['id'] = $played_match->getId();
                 $matches_played[$key]['teams'][0] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam1()]);
                 $matches_played[$key]['teams'][1] = $teamrepository->findOneBy(['id' => $played_match->getIdTeam2()]);
                 $matches_played[$key]['terrain'] = $key + 1;
@@ -206,6 +206,7 @@ class MatchesController extends AbstractController
                     ;
                     $em->persist($match);
                     $em->flush();
+                    $matches_played[$i]['id'] = $match->getId();
                     $matches_played[$i]['teams'][0] = $team1;
                     $matches_played[$i]['teams'][0]
                         ->setPlayed(1);
@@ -218,18 +219,23 @@ class MatchesController extends AbstractController
                 }
             }
         }
-
         return $matches_played;
     }
 
     #[Route('/set-winner', name: 'set-winner', methods: ['POST'])]
-    public function setWinner(Request $request): JsonResponse
+    public function setWinner(Request $request, MatchesRepository $matchesrepository, EntityManagerInterface $em): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
+        $teamid = $data['teamid'] ?? null;
+        $matchid = $data['matchid'] ?? null;
+
+        $match = $matchesrepository->findOneBy(['id' => $matchid]);
+        $match->setWinnerteamid($teamid);
+        $em->flush();
         // Votre logique ici
         return $this->json([
-            'message' => 'Action effectuée avec succès',
-            'teamid' => $data['teamid']
+            'message' => 'Success',
+            'teamid' => $teamid
         ]);
     }
 }
