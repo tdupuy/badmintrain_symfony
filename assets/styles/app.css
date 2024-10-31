@@ -109,3 +109,15 @@ form .input-create-tournament{
     bottom: -2.5rem;
     left: 28%;
   }
+
+  .create-match{
+    position: absolute;
+    top: 10rem;
+    left: 3.5rem;
+    color: white;
+    width: 11rem;
+  }
+
+  .create-match:hover{
+    cursor: pointer;
+  }

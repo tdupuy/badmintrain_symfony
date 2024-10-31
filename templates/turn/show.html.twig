@@ -21,8 +21,20 @@
                 <div class="terrain-content">
                     <div>
                     {% if match.teams[0] is empty and match.teams[1] is empty %}
-                        <div class="wrapper-no-match bg-white">
+                        <div class="wrapper-no-match bg-white" {{ stimulus_controller('quickmatch') }}>
                             <span style="position: absolute;width: 100%;left: 0.25rem;top: 5rem;">Pas de match sur ce terrain</span>
+                            {% if subs|length >= 2 %}
+                                <div 
+                                    class="create-match" 
+                                    data-subs={{subs|json_encode|e}} 
+                                    data-idtournament={{tournamentid}} 
+                                    data-turn={{turn}}
+                                    {{ stimulus_action('quickmatch','createQuickMatch','click') }}
+                                >
+                                    <p><small> Ajouter un match en création rapide </small></p>
+                                    {{ ux_icon('oui:ml-create-multi-metric-job', {width: '30px', height: '30px'}) }}
+                                </div>
+                            {% endif %}
                         </div>
                     {% else %}
                         <div class="left corridor"></div>

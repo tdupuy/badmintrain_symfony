@@ -29,7 +29,6 @@ export default class extends Controller {
             body: JSON.stringify({ matchid, teamid })
         });
         const data = await response.json();
-        console.log(data.code);
         switch (data.code) {
             case 'set' :
                 this.element.querySelector('[data-teamid="' + data.teamid +'"]').classList.add('winner');
