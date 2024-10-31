@@ -61,7 +61,7 @@ class MatchesController extends AbstractController
             'subs' => $subs,
             'turn' => $turn,
             'tournamentid' => $tournament->getId(),
-            'endoftournament' => $endoftournament ?? false
+            'endoftournament' => $endoftournament ?? false,
         ]);
     }
 
@@ -252,6 +252,43 @@ class MatchesController extends AbstractController
             'code' => $code,
             'teamid' => $teamid,
             'matchid' => $matchid
+        ]);
+    }
+
+    #[Route('/create-quickmatch', name: 'create-quickmatch', methods: ['POST'])]
+    public function createQuickMatch(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $subs = json_decode($data['subs']);
+        $idtournament = $data['idtournament'];
+        $turn = $data['turn'];
+
+        // Create teams for only one player
+        for($i = 0; $i < 2; $i++){
+            $team = new Teams();
+            $team
+                ->setPlayer1($subs[$i])
+                ->setIdtournament($idtournament)
+                ->setPlayed(1)
+                ->setWeight(0);
+            $em->persist($team);
+            $em->flush();
+            $teams[$i] = $team->getId();
+        }
+
+        // Create new match
+        $match = new Matches();
+        $match
+            ->setIdteam1($teams[0])
+            ->setIdTeam2($teams[1])
+            ->setIdtournament($idtournament)
+            ->setTurn($turn);
+        $em->persist($match);
+        $em->flush();
+
+
+        return $this->json([
+            'code' => 'success'
         ]);
     }
 }
