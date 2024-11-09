@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Badmintrain | Résultat {% endblock %}
+
+{% block body %}
+    <table class="table ">
+        <thead>
+            <tr>
+            <th scope="col">Numéro du joueur</th>
+            <th scope="col">% de match gagnés</th>
+            <th scope="col">Nombre de matchs joués</th>
+            <th scope="col">Nombre de victoire</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ result.winrate }}%</td>
+                <td>{{ result.nbmatches }}</td>
+                <td>{{ result.nbwins }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock body %}
