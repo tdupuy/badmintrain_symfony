@@ -6,6 +6,7 @@ use App\Entity\Matches;
 use App\Entity\Teams;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\Types\Integer;
 
 /**
  * @extends ServiceEntityRepository<Matches>
@@ -27,6 +28,32 @@ class MatchesRepository extends ServiceEntityRepository
         ->setParameter('tournamentId', $idtournament)
         ->getQuery()
         ->getResult();
+    }
+
+    public function getMatchesForPlayersByTournament(int $idtournament, int $player)
+    {
+        return $this->createQueryBuilder('r')
+        ->select('count(r.id) as nbmatches')
+        ->innerJoin('App\Entity\Teams', 't', 'WITH', 'r.idteam1 = t.id OR r.idteam2 = t.id')
+        ->where('r.idtournament = :tournamentid')
+        ->andWhere('t.player1 = :playerid OR t.player2 = :playerid')
+        ->setParameter('tournamentid', $idtournament)
+        ->setParameter('playerid', $player)
+        ->getQuery()
+        ->getSingleScalarResult();
+    }
+
+    public function getWinsForPlayersByTournament(int $idtournament, int $player)
+    {
+        return $this->createQueryBuilder('r')
+        ->select('count(r.id) as nbwins')
+        ->innerJoin('App\Entity\Teams', 't', 'WITH', 'r.winnerteamid = t.id')
+        ->where('r.idtournament = :tournamentid')
+        ->andWhere('t.player1 = :playerid OR t.player2 = :playerid')
+        ->setParameter('tournamentid', $idtournament)
+        ->setParameter('playerid', $player)
+        ->getQuery()
+        ->getSingleScalarResult();
     }
 
 //    /**
