@@ -84,7 +84,7 @@
             </div>
         {% endfor %}
         </div>
-        {% if not endoftournament %}
+        {% if not endoftournament and subs|length > 0 %}
         <p class="h6 text-center mb-5"><b>Coin buvette :</b> 
                 <span class="substitute">
                     {% for sub in subs %}
@@ -92,7 +92,8 @@
                     {% endfor %}
                 </span>
         </p>
-        {% else %}
+        {% endif %}
+        {% if endoftournament %}
         <h1 class="text-center mb-5"> FIN DU TOURNOI </h1>
         {% endif %}
          <div class="d-grid gap-2 d-md-block text-center">
