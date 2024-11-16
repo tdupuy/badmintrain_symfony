@@ -4,6 +4,11 @@
 
 {% block body %}
     <div class="container-fluid">
+        <div class="row text-center">
+            <img src={{asset('media/badmintrain-logo.png')}} class="mb-3 w-25 m-auto my-3" alt="logo">
+        </div>
+    </div>
+    <div class="container-fluid content-turn">
         <div class="row">
         {% for match in matches %}
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center py-5">
@@ -27,12 +32,12 @@
         {% if endoftournament %}
             <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-primary btn-prev-turn"> Tour précédent </a>
         {% else %}
-            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn + 1 }) }}" class="btn btn-success btn-next-turn d-inline w-auto m-auto me-1" role="button"> Tour suivant </a>
+            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn + 1 }) }}" class="btn btn-next-turn d-inline w-auto m-auto me-1" role="button"> Tour suivant </a>
             {% if turn %}
                 <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-warning btn-next-turn d-inline w-auto m-auto ms-1" role="button"> Tour précédent </a>
             {% endif %}
         {% endif %}
-        <a href="{{ path('tournament.result', {'id' : tournamentid}) }}" class="btn btn-primary btn-next-turn" role="button"> Voir les résultats </a>
+        <a href="{{ path('tournament.result', {'id' : tournamentid}) }}" class="btn btn-show-results" role="button"> Voir les résultats </a>
         </div>
     </div>
 {% endblock %}

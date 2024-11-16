@@ -1,3 +1,7 @@
+html{
+  height: 100%;
+}
+
 * {
   font-family: "Noto Sans", sans-serif;
   font-optical-sizing: auto;
@@ -40,7 +44,7 @@ form .input-create-tournament{
 }
 
 .terrain-separator{
-  height: 9rem;
+  height: 8.5rem;
   border-bottom: 2px solid white;
 }
 
@@ -69,12 +73,13 @@ form .input-create-tournament{
 .corridor.left{
   left: 1rem;
   border-right: 2px solid white;
+  top: 25px;
 }
 
 .corridor.right{
   right: 1rem;
   border-left: 2px solid white;
-  top: 3rem;
+  top: 25px;
 }
 
 .information{
@@ -120,4 +125,24 @@ form .input-create-tournament{
 
   .create-match:hover{
     cursor: pointer;
+  }
+
+  .content-turn{
+    background: rgb(255,253,231);
+    background: linear-gradient(90deg, rgba(255,253,231,1) 0%, rgba(211,211,211,0.5970588919161415) 70%);
+    height: 100vh;
+  }
+
+  .btn-next-turn{
+    background-color: #28A745!important;
+    color: white!important;
+  }
+
+  .btn-show-results{
+    background-color: #1A73E8!important;
+    color: white!important;
+  }
+
+  .btn-next-turn:hover, .btn-show-results:hover{
+    opacity: 0.5;
   }
