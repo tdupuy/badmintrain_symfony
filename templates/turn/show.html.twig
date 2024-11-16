@@ -3,84 +3,16 @@
 {% block title %}Badmintrain | Manche {{turn + 1}}{% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="container-fluid text-center py-5">
+    <div class="container-fluid">
+        <div class="row text-center">
+            <img src={{asset('media/badmintrain-logo.png')}} class="mb-3 w-25 m-auto my-3" alt="logo">
+        </div>
+    </div>
+    <div class="container-fluid content-turn">
+        <div class="row">
         {% for match in matches %}
-            <div 
-                class="card mx-3 mb-5 terrain_{{ match.terrain }} terrain" 
-                style="width: 18rem; display: inline-block; height: 20rem;"  
-                {{ match.id is defined and match.id ? 'data-matchid=' ~ match.id : '' }}
-                {{ stimulus_controller('winner') }}
-            >
-                <div class="card-header text-uppercase">
-                    <b>terrain {{ match.terrain }}</b>
-                </div>
-                <div class="terrain-content">
-                    <div>
-                    {% if match.teams[0] is empty and match.teams[1] is empty %}
-                        <div class="wrapper-no-match bg-white" {{ stimulus_controller('quickmatch') }}>
-                            <span style="position: absolute;width: 100%;left: 0.25rem;top: 5rem;">Pas de match sur ce terrain</span>
-                            {% if subs|length >= 2 %}
-                                <div 
-                                    class="create-match" 
-                                    data-subs={{subs|json_encode|e}} 
-                                    data-idtournament={{tournamentid}} 
-                                    data-turn={{turn}}
-                                    {{ stimulus_action('quickmatch','createQuickMatch','click') }}
-                                >
-                                    <p><small> Ajouter un match en création rapide </small></p>
-                                    {{ ux_icon('oui:ml-create-multi-metric-job', {width: '30px', height: '30px'}) }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    {% else %}
-                        <div class="left corridor"></div>
-                        <div 
-                            class="winner-selected {{ (match.winner is defined and match.teams[0].id == match.winner ) ? 'winner' : '' }}" 
-                            data-teamid={{ match.teams[0].id }} 
-                            {{ stimulus_action('winner','setWinner','click') }}
-                        >
-                            <div class="ligne-fond top d-block">
-                                {% if match.teams[0].replayed is defined and match.teams[0].replayed %}
-                                <p class="team-replayed">
-                                    {{ ux_icon('typcn:info-outline', {width: '30px', height: '30px'}) }}
-                                    <small> 2ème match </small>
-                                </p>
-                                {% endif %}
-                            </div>
-                            <div class="player left d-inline-block">
-                                <span class="player_nb">{{ match.teams[0].player1 }}</span>
-                            </div>
-                            <div class="player right d-inline-block">
-                                <span class="player_nb">{{ match.teams[0].player2 }}</span>
-                            </div>
-                            <div class="d-block terrain-separator"></div>
-                        </div>
-                        <div 
-                            class="winner-selected {{ ( match.winner is defined and match.teams[1].id == match.winner ) ? 'winner' : '' }}" 
-                            data-teamid={{ match.teams[1].id }} 
-                            {{ stimulus_action('winner','setWinner','click') }}
-                        >
-                            <div class="player left d-inline-block">
-                                <span class="player_nb">{{ match.teams[1].player1 }}</span>
-                            </div>
-                            <div class="player right d-inline-block">
-                                <span class="player_nb">{{ match.teams[1].player2 }}</span>
-                            </div>
-                            <div class="d-block terrain-separator"></div>
-                            <div class="ligne-fond bottom d-block">
-                                {% if match.teams[1].replayed is defined and match.teams[1].replayed %}
-                                <p class="team-replayed" >
-                                    {{ ux_icon('typcn:info-outline', {width: '30px', height: '30px'}) }}
-                                    <small> 2ème match </small>
-                                </p>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="right corridor"></div>
-                    {% endif %}
-                    </div>
-                </div>
+            <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center py-5">
+                {% include 'turn/terrain.html.twig' with {'match': match} only %}
             </div>
         {% endfor %}
         </div>
@@ -100,12 +32,12 @@
         {% if endoftournament %}
             <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-primary btn-prev-turn"> Tour précédent </a>
         {% else %}
-            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn + 1 }) }}" class="btn btn-success btn-next-turn d-inline w-auto m-auto me-1" role="button"> Tour suivant </a>
+            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn + 1 }) }}" class="btn btn-next-turn d-inline w-auto m-auto me-1" role="button"> Tour suivant </a>
             {% if turn %}
                 <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-warning btn-next-turn d-inline w-auto m-auto ms-1" role="button"> Tour précédent </a>
             {% endif %}
         {% endif %}
-        <a href="{{ path('tournament.result', {'id' : tournamentid}) }}" class="btn btn-primary btn-next-turn" role="button"> Voir les résultats </a>
+        <a href="{{ path('tournament.result', {'id' : tournamentid}) }}" class="btn btn-show-results" role="button"> Voir les résultats </a>
         </div>
     </div>
 {% endblock %}
