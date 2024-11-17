@@ -1,0 +1,19 @@
+<div class="container">
+    <div class="row text-center mb-4">
+    {% if not endoftournament %}
+        <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn + 1 }) }}" class="btn btn-next-turn d-inline w-auto m-auto btn-lg" role="button"> Tour suivant </a>
+    {% endif %}
+    </div>
+    <div class="container">
+        <div class="row">
+            {% if turn > 0 %}
+            <div class="col text-end">
+                <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-primary btn-prev-turn btn-lg w-auto"> Tour précédent </a>
+            </div>
+            {% endif %}
+            <div class="col {% if turn > 0 %} text-start {% else %} text-center {% endif %}">
+                <a href="{{ path('tournament.result', {'id' : tournamentid}) }}" class="btn btn-show-results btn-lg w-auto"> Voir les résultats </a>
+            </div>
+        </div>
+    </div>
+</div>
