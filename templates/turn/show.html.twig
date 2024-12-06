@@ -11,7 +11,7 @@
     <div class="container-fluid content-turn">
         <div class="row">
         {% for match in matches %}
-            <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 text-center py-5">
+            <div class="col-12 col-lg-4 col-xl-3 text-center py-5">
                 {% include 'turn/terrain.html.twig' with {'match': match} only %}
             </div>
         {% endfor %}
@@ -28,16 +28,6 @@
         {% if endoftournament %}
         <h1 class="text-center mb-5"> FIN DU TOURNOI </h1>
         {% endif %}
-         <div class="d-grid gap-2 d-md-block text-center">
-        {% if endoftournament %}
-            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-primary btn-prev-turn"> Tour précédent </a>
-        {% else %}
-            <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn + 1 }) }}" class="btn btn-next-turn d-inline w-auto m-auto me-1" role="button"> Tour suivant </a>
-            {% if turn %}
-                <a href="{{ path('matches.show', {'id' : tournamentid,'turn' : turn - 1 }) }}" class="btn btn-warning btn-next-turn d-inline w-auto m-auto ms-1" role="button"> Tour précédent </a>
-            {% endif %}
-        {% endif %}
-        <a href="{{ path('tournament.result', {'id' : tournamentid}) }}" class="btn btn-show-results" role="button"> Voir les résultats </a>
-        </div>
+        {% include 'turn/boutons.html.twig' with {'tournamentid': tournamentid, 'turn': turn, 'endoftournament': endoftournament} only %}
     </div>
 {% endblock %}
