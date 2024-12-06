@@ -130,7 +130,8 @@ form .input-create-tournament{
   .content-turn{
     background: rgb(255,253,231);
     background: linear-gradient(90deg, rgba(255,253,231,1) 0%, rgba(211,211,211,0.5970588919161415) 70%);
-    height: 100vh;
+    background-attachment: fixed;
+    min-height: 100vh;
   }
 
   .btn-next-turn{
