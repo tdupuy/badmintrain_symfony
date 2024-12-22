@@ -291,4 +291,12 @@ class MatchesController extends AbstractController
             'code' => 'success'
         ]);
     }
+
+    #[Route('/add-player', name: 'add-player', methods: ['POST'])]
+    public function addPlayer(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        return $this->json([
+            'code' => 'success'
+        ]);
+    }
 }

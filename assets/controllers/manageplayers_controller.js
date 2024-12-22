@@ -17,8 +17,7 @@ export default class extends Controller {
         e.preventDefault();
 
         const turn = e.target.elements['turn'].value;
-        console.log(turn);
-        //this.callMatchesController(turn);
+        this.callMatchesController(turn);
     }
 
     async callMatchesController(turn) {
@@ -31,8 +30,9 @@ export default class extends Controller {
             body: JSON.stringify({ turn })
         });
         const data = await response.json();
-        if(data.code = "success"){
-           // window.location.reload();
-        }
+        console.log(data.code);
+        /*if(data.code = "success"){
+           
+        }*/
     }
 }
