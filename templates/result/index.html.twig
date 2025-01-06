@@ -3,24 +3,61 @@
 {% block title %}Badmintrain | Résultat {% endblock %}
 
 {% block body %}
-    <table class="table ">
-        <thead>
+<div class="table-responsive p-5">
+    <table class="table pt-3">
+        <thead class="thead-light">
             <tr>
-            <th scope="col">Numéro du joueur</th>
-            <th scope="col">% de match gagnés</th>
-            <th scope="col">Nombre de matchs joués</th>
-            <th scope="col">Nombre de victoire</th>
+                <th scope="col" class="bg-transparent text-center">Classement</th>
+                <th scope="col" class="bg-transparent text-center">Numéro du joueur</th>
+                <th scope="col" class="bg-transparent text-center">% de match gagnés</th>
+                <th scope="col" class="bg-transparent text-center">Nombre de matchs joués</th>
+                <th scope="col" class="bg-transparent text-center">Nombre de victoire</th>
             </tr>
         </thead>
         <tbody>
             {% for nbjoueur, result in results %}
+                {% set percent = result.winrate %}
+
+                {% set color %}
+                    {% if percent <= 25 %}text-danger
+                    {% elseif percent <= 50 %}text-warning
+                    {% elseif percent <= 75 %}text-info
+                    {% else %}text-success
+                    {% endif %}
+                {% endset %}
             <tr>
-                <th scope="row">{{ nbjoueur }}</th>
-                <td>{{ result.winrate }}%</td>
-                <td>{{ result.nbmatches }}</td>
-                <td>{{ result.nbwins }}</td>
+                <th scope="row" class="bg-transparent text-center">
+                    {% if loop.index == 1 %}
+                        {{ ux_icon('twemoji:1st-place-medal', {width: '30px', height: '30px'}) }}
+                    {% elseif loop.index == 2 %}
+                        {{ ux_icon('twemoji:2nd-place-medal', {width: '30px', height: '30px'}) }}
+                    {% elseif loop.index == 3 %}
+                        {{ ux_icon('twemoji:3rd-place-medal', {width: '30px', height: '30px'}) }}
+                    {% else %}
+                        {{ loop.index }}
+                    {% endif %}
+                </th>
+                <td class="bg-transparent {{ color }} text-center"><b>{{ nbjoueur }}</b></td>
+                <td class="bg-transparent text-center">
+                    <div class="d-flex align-items-center">
+                        <span class="me-2 small {{ color }}">{{ percent }}%</span>
+                        <div class="progress w-100" style="height: 4px;">
+                            <div 
+                                class="progress-bar {{ color }}" 
+                                role="progressbar" 
+                                style="width: {{ percent }}%; background-color: currentColor !important;" 
+                                aria-valuenow="{{ percent }}" 
+                                aria-valuemin="0" 
+                                aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="bg-transparent text-center">{{ result.nbmatches }}</td>
+                <td class="bg-transparent text-center">{{ result.nbwins }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+</div>
 {% endblock body %}
