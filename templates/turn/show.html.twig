@@ -1,33 +1,26 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-in.html.twig' %}
 
 {% block title %}Badmintrain | Manche {{turn + 1}}{% endblock %}
 
 {% block body %}
-    <div class="container-fluid">
-        <div class="row text-center">
-            <img src={{asset('media/badmintrain-logo.png')}} class="mb-3 w-25 m-auto my-3" alt="logo">
+    <div class="row">
+    {% for match in matches %}
+        <div class="col-12 col-lg-4 col-xl-3 text-center py-5">
+            {% include 'turn/terrain.html.twig' with {'match': match} only %}
         </div>
+    {% endfor %}
     </div>
-    <div class="container-fluid content-turn">
-        <div class="row">
-        {% for match in matches %}
-            <div class="col-12 col-lg-4 col-xl-3 text-center py-5">
-                {% include 'turn/terrain.html.twig' with {'match': match} only %}
-            </div>
-        {% endfor %}
-        </div>
-        {% if not endoftournament and subs|length > 0 %}
-        <p class="h6 text-center mb-5"><b>Coin buvette :</b> 
-                <span class="substitute">
-                    {% for sub in subs %}
-                        {{ sub }}
-                    {% endfor %}
-                </span>
-        </p>
-        {% endif %}
-        {% if endoftournament %}
-        <h1 class="text-center mb-5"> FIN DU TOURNOI </h1>
-        {% endif %}
-        {% include 'turn/boutons.html.twig' with {'tournamentid': tournamentid, 'turn': turn, 'endoftournament': endoftournament} only %}
-    </div>
+    {% if not endoftournament and subs|length > 0 %}
+    <p class="h6 text-center mb-5"><b>Coin buvette :</b> 
+            <span class="substitute">
+                {% for sub in subs %}
+                    {{ sub }}
+                {% endfor %}
+            </span>
+    </p>
+    {% endif %}
+    {% if endoftournament %}
+    <h1 class="text-center mb-5"> FIN DU TOURNOI </h1>
+    {% endif %}
+    {% include 'turn/boutons.html.twig' with {'tournamentid': tournamentid, 'turn': turn, 'endoftournament': endoftournament} only %}
 {% endblock %}

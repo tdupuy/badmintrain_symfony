@@ -1,0 +1,22 @@
+<!-- Modal de confirmation -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true" {{ stimulus_controller('manageplayers') }}>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form {{ stimulus_action('manageplayers', 'addPlayer', 'submit') }}>
+        <div class="modal-header">
+          <h5 class="modal-title" id="confirmationModalLabel">Ajouter un joueur</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Êtes-vous sûr de vouloir ajouter un joueur ? <br/>
+          Le joueur rejoindra le tournoi au prochain tour
+        </div>
+        <input type="hidden" name="turn" value={{ turn }} />
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-success">Confirmer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

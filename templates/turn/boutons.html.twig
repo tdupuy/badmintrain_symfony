@@ -16,4 +16,15 @@
             </div>
         </div>
     </div>
+    <div class="container d-none">
+        <div class="row">
+            <div class="col text-end">
+                <a href="#" class="btn btn-show-results btn-lg w-auto mb-3 btn-success" data-bs-toggle="modal" data-bs-target="#confirmationModal"> {{ ux_icon('icomoon-free:user-plus' , {width: '25px'}) }} </a>
+            </div>
+            <div class="col text-start">
+                <a href="#" class="btn btn-primary btn-prev-turn btn-lg w-auto btn-danger"> {{ ux_icon('icomoon-free:user-minus' , {width: '25px'}) }} </a>
+            </div>
+        </div>
+    </div>
 </div>
+{% include 'turn/modals/addplayer.html.twig' with {'turn': turn } %}
