@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-in.html.twig' %}
 
 {% block title %}Badmintrain | Résultat {% endblock %}
 
@@ -13,9 +13,9 @@
             </tr>
         </thead>
         <tbody>
-            {% for result in results %}
+            {% for nbjoueur, result in results %}
             <tr>
-                <th scope="row">{{ loop.index }}</th>
+                <th scope="row">{{ nbjoueur }}</th>
                 <td>{{ result.winrate }}%</td>
                 <td>{{ result.nbmatches }}</td>
                 <td>{{ result.nbwins }}</td>

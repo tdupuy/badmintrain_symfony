@@ -87,16 +87,21 @@ form .input-create-tournament{
   background-position: center;
   background-size: cover;
 }
+
+.logo-link{
+  scale: 1.5;
+}
   
   @media (min-width: 768px) {
     .gradient-form {
     height: 100vh !important;
     }
-  }
-  @media (min-width: 769px) {
     .gradient-custom-2 {
     border-top-right-radius: .3rem;
     border-bottom-right-radius: .3rem;
+    }
+    .logo-link{
+      scale: inherit;
     }
   }
 
