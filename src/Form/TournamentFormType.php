@@ -7,9 +7,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\IsTrue;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class TournamentFormType extends AbstractType
 {
@@ -27,7 +24,7 @@ class TournamentFormType extends AbstractType
                     '7' => 7,
                     '8' => 8,
                     '9' => 9,
-                    '10' => 10
+                    '10' => 10,
                 ],
             ])
             ->add('nbjoueurs');

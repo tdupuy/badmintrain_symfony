@@ -28,7 +28,7 @@ class Teams
     // We don't need to save that in db
     private ?int $replayed = null;
 
-    #[ORM\Column(options: ["default" => 0])]
+    #[ORM\Column(options: ['default' => 0])]
     private ?int $weight = null;
 
     public function getId(): ?int
