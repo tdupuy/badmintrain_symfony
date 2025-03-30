@@ -1,10 +1,11 @@
 <?php
+
 // src/Controller/LuckyController.php
+
 namespace App\Controller;
 
 use App\Entity\Tournament;
 use App\Form\TournamentFormType;
-use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,12 +26,13 @@ class TournamentController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $tournament = $form->getData();
             $tournament
-                ->setCreatedAt(new DateTimeImmutable())
-                ->setUpdatedAt(new DateTimeImmutable())
+                ->setCreatedAt(new \DateTimeImmutable())
+                ->setUpdatedAt(new \DateTimeImmutable())
                 ->setEnded(0)
                 ->setAdmin(!is_null($user) ? $user->getId() : 1);
             $em->persist($tournament);
             $em->flush();
+
             return $this->redirectToRoute('matches.show', ['id' => $tournament->getId(), 'turn' => 0]);
         }
 
