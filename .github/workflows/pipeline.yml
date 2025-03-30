@@ -1,27 +1,11 @@
-name: Post-Push Validation
-
-on: push
+name: PHP CS Validation
+on: pull_request
 
 jobs:
-  verify:
+  check:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Validate PHP CS
-        uses: docker://oskarstark/php-cs-fixer-ga
+      - uses: docker://oskarstark/php-cs-fixer-ga
         with:
           args: --dry-run --diff --using-cache=no
-          
-      - name: Reject push if invalid
-        if: failure()
-        run: |
-          echo "::error::Le push contient des violations de code"
-          curl -X PATCH \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}/git/refs/heads/main \
-            -d '{"sha": "'${{ github.event.before }}'", "force": true}'
-          exit 1
