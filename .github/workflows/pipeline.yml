@@ -1,11 +1,27 @@
-name: PHP CS Validation
+name: PHP-CS Validation
 on: pull_request
 
 jobs:
-  check:
+  php-cs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: docker://oskarstark/php-cs-fixer-ga
         with:
-          args: --dry-run --diff --using-cache=no
+          ref: ${{ github.event.pull_request.head.sha }}
+      
+      - name: Setup PHP-CS
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: php-cs-fixer
+          
+      - name: Run and apply fixes
+        run: |
+          php-cs-fixer fix --dry-run --diff || (php-cs-fixer fix && exit 1)
+        
+      - name: Commit fixes
+        if: failure()
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'PHP-CS-Fixer automatic fixes'
+          branch: ${{ github.head_ref }}
