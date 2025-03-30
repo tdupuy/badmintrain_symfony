@@ -1,27 +1,30 @@
-name: PHP-CS Validation
+name: PHP-CS AutoFix
 on: pull_request
 
 jobs:
-  php-cs:
+  php-cs-fixer:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-      
-      - name: Setup PHP-CS
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0  # Nécessaire pour les commits
+
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          tools: php-cs-fixer
-          
-      - name: Run and apply fixes
-        run: |
-          php-cs-fixer fix --dry-run --diff || (php-cs-fixer fix && exit 1)
-        
+          tools: php-cs-fixer, cs2pr
+
+      - name: Dry run first (annotation des erreurs)
+        run: php-cs-fixer fix --dry-run --diff --format=checkstyle | cs2pr
+
+      - name: Apply fixes
+        run: php-cs-fixer fix --diff
+
       - name: Commit fixes
-        if: failure()
+        if: success() && steps.fixes.outcome == 'success'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'PHP-CS-Fixer automatic fixes'
+          commit_message: '🔧 PHP-CS-Fixer automatic fixes'
           branch: ${{ github.head_ref }}
