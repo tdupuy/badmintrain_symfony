@@ -8,23 +8,39 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0  # Nécessaire pour les commits
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}  # Nécessaire pour pousser les corrections
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
-          tools: php-cs-fixer, cs2pr
+          php-version: '8.1'
+          tools: php-cs-fixer
+          coverage: none
 
-      - name: Dry run first (annotation des erreurs)
-        run: php-cs-fixer fix --dry-run --diff --format=checkstyle | cs2pr
+      - name: Install cs2pr
+        run: composer require --dev staabm/annotate-pull-request-from-checkstyle
+
+      - name: Dry run with annotations
+        id: dry-run
+        run: |
+          php-cs-fixer fix --dry-run --diff --format=checkstyle --allow-risky=yes \
+          | tee checkstyle.xml \
+          | cs2pr || true
+          echo "HAS_ERRORS=$(grep -q '<error' checkstyle.xml && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
 
       - name: Apply fixes
-        run: php-cs-fixer fix --diff
+        if: steps.dry-run.outputs.HAS_ERRORS == 'true'
+        id: fixes
+        run: |
+          php-cs-fixer fix --allow-risky=yes
+          git diff --quiet || echo "HAS_FIXES=true" >> $GITHUB_OUTPUT
 
       - name: Commit fixes
-        if: success() && steps.fixes.outcome == 'success'
+        if: steps.dry-run.outputs.HAS_ERRORS == 'true' && steps.fixes.outputs.HAS_FIXES == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: '🔧 PHP-CS-Fixer automatic fixes'
           branch: ${{ github.head_ref }}
+          commit_user_name: 'PHP-CS Bot'
+          commit_user_email: 'php-cs-bot@example.com'
