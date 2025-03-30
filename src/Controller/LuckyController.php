@@ -8,8 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class LuckyController extends AbstractController
-{
+class LuckyController extends AbstractController{
     #[Route('/lucky/number', name : 'app_lucky')]
     public function number(): Response
     {
@@ -18,4 +17,5 @@ class LuckyController extends AbstractController
         return $this->render('lucky/number.html.twig', [
             'number' => $number,
         ]);
-    }}
+    }
+}
