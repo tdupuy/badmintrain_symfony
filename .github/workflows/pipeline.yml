@@ -1,19 +1,17 @@
-name: PHP Quality Checks
+name: PHP Quality Gate
 
 on:
   pull_request:
-    branches: [ main ]
-    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  php-syntax-check:
-    name: PHP Syntax Validation
+  php-syntax:
+    name: PHP Syntax Check
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -21,15 +19,28 @@ jobs:
           php-version: '8.2'
           coverage: none
 
-      - name: Find PHP files
-        id: find-php
-        run: |
-          find . -type f -name '*.php' \
-            -not -path './vendor/*' \
-            -not -path './node_modules/*' \
-            -printf '%P\n' > php_files.txt
-          echo "files=$(cat php_files.txt | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+      - name: Run PHP Syntax Check
+        uses: mlocati/check-php-syntax@v1
+        with:
+          directory: .
+          exclude: 'vendor/'
+          fail-on-warnings: true
 
-      - name: Validate PHP syntax
+  php-cs-fixer:
+    name: PHP Code Standards
+    runs-on: ubuntu-latest
+    needs: php-syntax
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PHP-CS-Fixer
+        run: composer require --dev friendsofphp/php-cs-fixer
+
+      - name: Run PHP-CS-Fixer
         run: |
-          while IFS= read -r file; do
+          ./vendor/bin/php-cs-fixer fix --dry-run --diff \
+            --allow-risky=yes \
+            --config=.php-cs-fixer.dist.php \
+            --verbose
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
