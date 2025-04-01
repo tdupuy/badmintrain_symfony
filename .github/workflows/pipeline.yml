@@ -1,46 +1,46 @@
-name: PHP-CS AutoFix
-on: pull_request
+name: PHP Quality Checks
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
-  php-cs-fixer:
+  php-lint:
+    name: PHP Syntax Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}  # Nécessaire pour pousser les corrections
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
-          tools: php-cs-fixer
-          coverage: none
+          php-version: '8.2'
+          tools: cs2pr
 
-      - name: Install cs2pr
-        run: composer require --dev staabm/annotate-pull-request-from-checkstyle
-
-      - name: Dry run with annotations
-        id: dry-run
+      - name: Run PHP Syntax Check
         run: |
-          php-cs-fixer fix --dry-run --diff --format=checkstyle --allow-risky=yes \
-          | tee checkstyle.xml \
-          | cs2pr || true
-          echo "HAS_ERRORS=$(grep -q '<error' checkstyle.xml && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          find . -type f -name '*.php' -exec php -l {} \; | grep -v 'No syntax errors detected'
 
-      - name: Apply fixes
-        if: steps.dry-run.outputs.HAS_ERRORS == 'true'
-        id: fixes
-        run: |
-          php-cs-fixer fix --allow-risky=yes
-          git diff --quiet || echo "HAS_FIXES=true" >> $GITHUB_OUTPUT
-
-      - name: Commit fixes
-        if: steps.dry-run.outputs.HAS_ERRORS == 'true' && steps.fixes.outputs.HAS_FIXES == 'true'
-        uses: stefanzweifel/git-auto-commit-action@v5
+  php-cs-fixer:
+    name: PHP Coding Standards
+    runs-on: ubuntu-latest
+    needs: php-lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          commit_message: '🔧 PHP-CS-Fixer automatic fixes'
-          branch: ${{ github.head_ref }}
-          commit_user_name: 'PHP-CS Bot'
-          commit_user_email: 'php-cs-bot@example.com'
+          ref: ${{ github.head_ref }}
+
+      - name: Run PHP-CS-Fixer
+        uses: docker://oskarstark/php-cs-fixer-ga
+        with:
+          args: --config=.php-cs-fixer.dist.php --dry-run --diff --allow-risky=yes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Annotate results
+        if: ${{ failure() }}
+        run: |
+          php-cs-fixer fix --dry-run --format=checkstyle | cs2pr
