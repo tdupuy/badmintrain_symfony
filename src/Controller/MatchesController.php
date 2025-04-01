@@ -129,6 +129,7 @@ class MatchesController extends AbstractController
 
     public function makeMatches(Tournament $tournament, int $turn): array|string
     {
+        exit('ok');
         if (null === $this->entityManager) {
             throw new \RuntimeException("EntityManager n'est pas initialisé");
         } else {
